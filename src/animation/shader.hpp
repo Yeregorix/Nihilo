@@ -25,6 +25,8 @@
 
 #include <string>
 
+#include "glm/glm.hpp"
+
 class Shader {
     public:
 
@@ -33,6 +35,8 @@ class Shader {
     ~Shader();
 
     void use() const;
+
+    void setMat4(const std::string& name, const glm::mat4& mat) const;
 
     private:
 

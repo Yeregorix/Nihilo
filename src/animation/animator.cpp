@@ -35,6 +35,6 @@ void Animator::update() const {
         return;
     }
 
-    _renderer.render();
+    _renderer.render(_window.aspect());
     _window.update();
 }

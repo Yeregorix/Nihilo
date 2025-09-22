@@ -25,6 +25,10 @@
 #include <stdexcept>
 
 #include "glad.h"
+#include "GLFW/glfw3.h"
+#include "glm/glm.hpp"
+#include "glm/ext/matrix_clip_space.hpp"
+#include "glm/ext/matrix_transform.hpp"
 
 // language=glsl
 const std::string vertexShader = R"(
@@ -35,8 +39,12 @@ layout (location = 1) in vec3 colorIn;
 
 out vec3 color;
 
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
 void main() {
-    gl_Position = vec4(position, 1.0);
+    gl_Position = projection * view * model * vec4(position, 1.0);
     color = colorIn;
 }
 )";
@@ -54,14 +62,32 @@ void main() {
 )";
 
 Renderer::Renderer() : _shader(vertexShader, fragmentShader), _vao{}, _vbo{}, _ebo{} {
+    glEnable(GL_DEPTH_TEST);
+
     constexpr float vertices[] = {
-        // positions        // colors
-        0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // bottom right
-       -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // bottom left
-        0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f  // top
+        // Positions          // Colors
+        -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f
     };
     constexpr unsigned int indices[] = {
-        0, 1, 2
+        // Front face
+        0, 1, 2, 2, 3, 0,
+        // Back face
+        4, 5, 6, 6, 7, 4,
+        // Left face
+        4, 0, 3, 3, 7, 4,
+        // Right face
+        1, 5, 6, 6, 2, 1,
+        // Top face
+        3, 2, 6, 6, 7, 3,
+        // Bottom face
+        4, 5, 1, 1, 0, 4,
     };
 
     glGenVertexArrays(1, &_vao);
@@ -96,11 +122,22 @@ Renderer::~Renderer() {
     glDeleteBuffers(1, &_ebo);
 }
 
-void Renderer::render() const {
+void Renderer::render(const float aspect) const {
     glClearColor(0, 0, 0, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     _shader.use();
+
+    auto model = glm::mat4(1.0f);
+    auto view = glm::mat4(1.0f);
+    model = glm::rotate(model, static_cast<float>(glfwGetTime()), glm::vec3(0.5f, 1.0f, 0.0f));
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    const auto projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
+
+    _shader.setMat4("model", model);
+    _shader.setMat4("view", view);
+    _shader.setMat4("projection", projection);
+
     glBindVertexArray(_vao);
-    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
 }

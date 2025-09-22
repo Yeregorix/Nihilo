@@ -62,3 +62,9 @@ bool Window::shouldClose() const {
 void Window::update() const {
     glfwSwapBuffers(_window);
 }
+
+float Window::aspect() const {
+    int width, height;
+    glfwGetFramebufferSize(_window, &width, &height);
+    return static_cast<float>(width) / static_cast<float>(height);
+}

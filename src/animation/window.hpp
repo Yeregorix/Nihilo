@@ -36,6 +36,8 @@ class Window {
 
     void update() const;
 
+    [[nodiscard]] float aspect() const;
+
     private:
 
     GLFWwindow* _window;

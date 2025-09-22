@@ -32,7 +32,7 @@ class Renderer {
 
     ~Renderer();
 
-    void render() const;
+    void render(float aspect) const;
 
     private:
 
