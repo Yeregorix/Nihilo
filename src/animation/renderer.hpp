@@ -20,31 +20,24 @@
  * SOFTWARE.
  */
 
-#include <iostream>
+#ifndef NIHILO_RENDERER_HPP
+#define NIHILO_RENDERER_HPP
 
-#include "manager.hpp"
+#include "shader.hpp"
 
-void print_what(const std::exception& e) {
-    std::cerr << e.what() << '\n';
-    try {
-        std::rethrow_if_nested(e);
-    } catch (const std::exception& nested) {
-        std::cerr << "nested: ";
-        print_what(nested);
-    }
-}
+class Renderer {
+    public:
 
-int main() {
-    try {
-        Manager manager;
-        manager.run();
+    Renderer();
 
-        glfwTerminate();
-        return 0;
-    } catch (const std::exception& e) {
-        print_what(e);
+    ~Renderer();
 
-        glfwTerminate();
-        return -1;
-    }
-}
+    void render() const;
+
+    private:
+
+    Shader _shader;
+    unsigned int _vao, _vbo, _ebo;
+};
+
+#endif //NIHILO_RENDERER_HPP

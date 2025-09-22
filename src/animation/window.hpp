@@ -20,31 +20,26 @@
  * SOFTWARE.
  */
 
-#include <iostream>
+#ifndef NIHILO_WINDOW_HPP
+#define NIHILO_WINDOW_HPP
 
-#include "manager.hpp"
+#include "GLFW/glfw3.h"
 
-void print_what(const std::exception& e) {
-    std::cerr << e.what() << '\n';
-    try {
-        std::rethrow_if_nested(e);
-    } catch (const std::exception& nested) {
-        std::cerr << "nested: ";
-        print_what(nested);
-    }
-}
+class Window {
+    public:
 
-int main() {
-    try {
-        Manager manager;
-        manager.run();
+    Window();
 
-        glfwTerminate();
-        return 0;
-    } catch (const std::exception& e) {
-        print_what(e);
+    ~Window();
 
-        glfwTerminate();
-        return -1;
-    }
-}
+    [[nodiscard]] bool shouldClose() const;
+
+    void update() const;
+
+    private:
+
+    GLFWwindow* _window;
+};
+
+
+#endif //NIHILO_WINDOW_HPP

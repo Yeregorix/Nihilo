@@ -20,52 +20,21 @@
  * SOFTWARE.
  */
 
-#include <stdexcept>
-
-#include <glad.h>
-
 #include "animator.hpp"
 #include "../manager.hpp"
 
 Animator::Animator(Manager& manager) : _manager(manager) {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    _window = glfwCreateWindow(800, 600, "Nihilo", nullptr, nullptr);
-    if (_window == nullptr) {
-        throw std::runtime_error("Failed to create window");
-    }
-
-    glfwMakeContextCurrent(_window);
-
-    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-        throw std::runtime_error("Failed to initialize GLAD");
-    }
-
-    glViewport(0, 0, 800, 600);
-
-    glfwSetFramebufferSizeCallback(_window, [](GLFWwindow*, const int width, const int height) {
-        glViewport(0, 0, width, height);
-    });
-}
-
-Animator::~Animator() {
-    glfwDestroyWindow(_window);
-    _window = nullptr;
 }
 
 void Animator::update() const {
+    glfwPollEvents();
     // TODO controls
 
-    if (glfwWindowShouldClose(_window)) {
+    if (_window.shouldClose()) {
         _manager.stop();
         return;
     }
 
-    // TODO render
-
-    glfwSwapBuffers(_window);
-    glfwPollEvents();
+    _renderer.render();
+    _window.update();
 }

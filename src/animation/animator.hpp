@@ -23,7 +23,8 @@
 #ifndef NIHILO_ANIMATOR_HPP
 #define NIHILO_ANIMATOR_HPP
 
-#include "GLFW/glfw3.h"
+#include "window.hpp"
+#include "renderer.hpp"
 
 class Manager;
 
@@ -32,14 +33,13 @@ class Animator {
 
     explicit Animator(Manager& manager);
 
-    ~Animator();
-
     void update() const;
 
     private:
 
     Manager& _manager;
-    GLFWwindow* _window;
+    Window _window;
+    Renderer _renderer;
 };
 
 

@@ -20,31 +20,11 @@
  * SOFTWARE.
  */
 
-#include <iostream>
+#ifndef NIHILO_FILE_UTIL_HPP
+#define NIHILO_FILE_UTIL_HPP
 
-#include "manager.hpp"
+#include <string>
 
-void print_what(const std::exception& e) {
-    std::cerr << e.what() << '\n';
-    try {
-        std::rethrow_if_nested(e);
-    } catch (const std::exception& nested) {
-        std::cerr << "nested: ";
-        print_what(nested);
-    }
-}
+std::string read_file(const std::string& path);
 
-int main() {
-    try {
-        Manager manager;
-        manager.run();
-
-        glfwTerminate();
-        return 0;
-    } catch (const std::exception& e) {
-        print_what(e);
-
-        glfwTerminate();
-        return -1;
-    }
-}
+#endif //NIHILO_FILE_UTIL_HPP

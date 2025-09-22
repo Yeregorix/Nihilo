@@ -20,31 +20,24 @@
  * SOFTWARE.
  */
 
-#include <iostream>
+#ifndef NIHILO_SHADER_HPP
+#define NIHILO_SHADER_HPP
 
-#include "manager.hpp"
+#include <string>
 
-void print_what(const std::exception& e) {
-    std::cerr << e.what() << '\n';
-    try {
-        std::rethrow_if_nested(e);
-    } catch (const std::exception& nested) {
-        std::cerr << "nested: ";
-        print_what(nested);
-    }
-}
+class Shader {
+    public:
 
-int main() {
-    try {
-        Manager manager;
-        manager.run();
+    explicit Shader(const std::string& name);
 
-        glfwTerminate();
-        return 0;
-    } catch (const std::exception& e) {
-        print_what(e);
+    ~Shader();
 
-        glfwTerminate();
-        return -1;
-    }
-}
+    void use() const;
+
+    private:
+
+    unsigned int _id;
+};
+
+
+#endif //NIHILO_SHADER_HPP

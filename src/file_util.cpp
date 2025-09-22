@@ -20,31 +20,21 @@
  * SOFTWARE.
  */
 
-#include <iostream>
+#include "file_util.hpp"
 
-#include "manager.hpp"
+#include <fstream>
+#include <sstream>
 
-void print_what(const std::exception& e) {
-    std::cerr << e.what() << '\n';
+std::string read_file(const std::string& path) {
+    std::ifstream stream;
+    stream.exceptions (std::ifstream::failbit | std::ifstream::badbit);
+
     try {
-        std::rethrow_if_nested(e);
-    } catch (const std::exception& nested) {
-        std::cerr << "nested: ";
-        print_what(nested);
-    }
-}
-
-int main() {
-    try {
-        Manager manager;
-        manager.run();
-
-        glfwTerminate();
-        return 0;
-    } catch (const std::exception& e) {
-        print_what(e);
-
-        glfwTerminate();
-        return -1;
+        stream.open(path);
+        std::stringstream buffer;
+        buffer << stream.rdbuf();
+        return buffer.str();
+    } catch (const std::ifstream::failure& _) {
+        std::throw_with_nested(std::runtime_error("Error reading file: " + path));
     }
 }
