@@ -10,4 +10,4 @@ add_executable(Nihilo main.cpp
 
 find_package(OpenGL REQUIRED)
 
-target_link_libraries(Nihilo glfw OpenGL::GL glad)
+target_link_libraries(Nihilo glfw OpenGL::GL glad glm::glm)
