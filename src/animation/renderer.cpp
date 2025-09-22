@@ -26,7 +26,34 @@
 
 #include "glad.h"
 
-Renderer::Renderer() : _shader("main"), _vao{}, _vbo{}, _ebo{} {
+// language=glsl
+const std::string vertexShader = R"(
+#version 330 core
+
+layout (location = 0) in vec3 position;
+layout (location = 1) in vec3 colorIn;
+
+out vec3 color;
+
+void main() {
+    gl_Position = vec4(position, 1.0);
+    color = colorIn;
+}
+)";
+
+// language=glsl
+const std::string fragmentShader = R"(
+#version 330 core
+
+in vec3 color;
+out vec4 FragColor;
+
+void main() {
+    FragColor = vec4(color, 1.0);
+}
+)";
+
+Renderer::Renderer() : _shader(vertexShader, fragmentShader), _vao{}, _vbo{}, _ebo{} {
     constexpr float vertices[] = {
         // positions        // colors
         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // bottom right

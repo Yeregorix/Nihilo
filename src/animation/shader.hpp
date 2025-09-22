@@ -28,7 +28,7 @@
 class Shader {
     public:
 
-    explicit Shader(const std::string& name);
+    Shader(const std::string& vertexSource, const std::string& fragmentSource);
 
     ~Shader();
 

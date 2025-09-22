@@ -12,13 +12,8 @@ add_executable(Nihilo main.cpp
         animation/window.cpp
         animation/window.hpp
         animation/shader.cpp
-        animation/shader.hpp
-        file_util.cpp
-        file_util.hpp)
+        animation/shader.hpp)
 
 find_package(OpenGL REQUIRED)
 
 target_link_libraries(Nihilo glfw OpenGL::GL glad glm::glm)
-
-add_custom_target(shaders COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/shaders ${CMAKE_CURRENT_BINARY_DIR}/shaders)
-add_dependencies(Nihilo shaders)

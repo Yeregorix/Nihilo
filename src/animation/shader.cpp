@@ -26,13 +26,10 @@
 
 #include <stdexcept>
 
-#include "../file_util.hpp"
-
 const std::string shadersDir = "shaders/";
 
-Shader::Shader(const std::string& name) {
-    std::string shaderString = read_file(shadersDir + name + ".vert");
-    auto source = shaderString.c_str();
+Shader::Shader(const std::string& vertexSource, const std::string& fragmentSource) {
+    auto source = vertexSource.c_str();
     const unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &source, nullptr);
     glCompileShader(vertexShader);
@@ -45,8 +42,7 @@ Shader::Shader(const std::string& name) {
         throw std::runtime_error(infoLog);
     }
 
-    shaderString = read_file(shadersDir + name + ".frag");
-    source = shaderString.c_str();
+    source = fragmentSource.c_str();
     const unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &source, nullptr);
     glCompileShader(fragmentShader);
