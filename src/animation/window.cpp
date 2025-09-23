@@ -21,16 +21,21 @@
  */
 
 #include <stdexcept>
-
-#include <glad.h>
-
-#include "window.hpp"
-
 #include <iostream>
 
-#include "glm/vec2.hpp"
+#include "glad.h"
+#include "window.hpp"
 
-Window::Window() {
+#include <cstring>
+
+#include "glm/glm.hpp"
+#include "glm/ext/scalar_constants.hpp"
+
+inline Window* getWindow(GLFWwindow* glfwWindow) {
+    return static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow));
+}
+
+Window::Window(Controller &controller) : _controller(controller) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -49,15 +54,46 @@ Window::Window() {
 
     glfwSetWindowUserPointer(_window, this);
 
-    glfwSetFramebufferSizeCallback(_window, [](GLFWwindow* window, const int width, const int height) {
-        if (const auto _this = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
-            _this->_size = glm::uvec2(width, height);
+    glfwSetKeyCallback(_window, [](GLFWwindow* window, const int key, const int scanCode, const int action, int) {
+        if (const Window* _this = getWindow(window)) {
+            const char* name = glfwGetKeyName(key, scanCode);
+            const char ch = name == nullptr || std::strlen(name) != 1 ? '\0' : *name;
+            switch (action) {
+                case GLFW_PRESS:
+                    _this->_controller.keyPressed(key, ch);
+                    break;
+                case GLFW_RELEASE:
+                    _this->_controller.keyReleased(key, ch);
+                    break;
+                default:
+                    break;
+            }
         }
     });
 
-    int width, height;
-    glfwGetFramebufferSize(_window, &width, &height);
-    _size = glm::uvec2(width, height);
+    glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, const int button, const int action, int) {
+        if (const Window* _this = getWindow(window)) {
+            if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+                _this->_controller.mouseReleased();
+            }
+        }
+    });
+
+    glfwSetCursorPosCallback(_window, [](GLFWwindow* window, const double x, const double y) {
+        if (const Window* _this = getWindow(window)) {
+            if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+                _this->_controller.mouseDragged(glm::vec2(x, y));
+            }
+        }
+    });
+
+    glfwSetScrollCallback(_window, [](GLFWwindow* window, double, const double dy) {
+        if (const Window* _this = getWindow(window)) {
+            if (std::abs(dy) > glm::epsilon<double>()) {
+                _this->_controller.scrolled(dy);
+            }
+        }
+    });
 }
 
 Window::~Window() {
@@ -129,10 +165,6 @@ void Window::update() const {
     glfwSwapBuffers(_window);
 }
 
-glm::uvec2 Window::size() const {
-    return _size;
-}
-
-bool Window::isKeyPressed(const int key) const {
-    return glfwGetKey(_window, key) == GLFW_PRESS;
+void Window::getSize(int& width, int& height) const {
+    glfwGetFramebufferSize(_window, &width, &height);
 }

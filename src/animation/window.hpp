@@ -23,15 +23,16 @@
 #ifndef NIHILO_WINDOW_HPP
 #define NIHILO_WINDOW_HPP
 
-#include <atomic>
+#include <functional>
 
+#include "controller.hpp"
 #include "GLFW/glfw3.h"
-#include "glm/vec2.hpp"
+#include "glm/glm.hpp"
 
 class Window {
     public:
 
-    Window();
+    explicit Window(Controller& controller);
 
     ~Window();
 
@@ -45,14 +46,12 @@ class Window {
 
     void update() const;
 
-    [[nodiscard]] glm::uvec2 size() const;
-
-    bool isKeyPressed(int key) const;
+    void getSize(int& width, int& height) const;
 
     private:
 
+    Controller& _controller;
     GLFWwindow* _window;
-    std::atomic<glm::uvec2> _size;
 };
 
 

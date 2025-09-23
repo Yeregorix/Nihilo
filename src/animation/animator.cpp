@@ -24,19 +24,21 @@
 
 #include "../manager.hpp"
 
-Animator::Animator(Manager& manager) : _manager(manager) {
+Animator::Animator(Manager& manager) : _manager(manager), _controller(_camera), _window(_controller) {
     _window.center();
     Window::clearContext();
+    updateControlSnapshot();
 }
 
 Animator::~Animator() {
     _window.setContext();
 }
 
-void Animator::updateControls() const {
+void Animator::updateControls() {
     glfwPollEvents();
 
-    // TODO controls
+    _controller.update();
+    updateControlSnapshot();
 
     if (_window.shouldClose()) {
         _manager.stop();
@@ -48,10 +50,18 @@ void Animator::beforeRender() const {
 }
 
 void Animator::updateRender() const {
-    _renderer.render(_window.size());
+    _renderer.render(_cameraSnapshot);
     _window.update();
 }
 
 void Animator::afterRender() {
     Window::clearContext();
+}
+
+void Animator::updateControlSnapshot() {
+    ControlSnapshot snapshot;
+    _window.getSize(snapshot.width, snapshot.height);
+    snapshot.fov = _camera.getFOV();
+    snapshot.view = _camera.getView();
+    _cameraSnapshot = snapshot;
 }

@@ -122,21 +122,18 @@ Renderer::~Renderer() {
     glDeleteBuffers(1, &_ebo);
 }
 
-void Renderer::render(const glm::uvec2 size) const {
-    glViewport(0, 0, static_cast<int>(size.x), static_cast<int>(size.y));
+void Renderer::render(const ControlSnapshot& control) const {
+    glViewport(0, 0, control.width, control.height);
     glClearColor(0, 0, 0, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     _shader.use();
 
-    auto model = glm::mat4(1.0f);
-    auto view = glm::mat4(1.0f);
-    model = glm::rotate(model, static_cast<float>(glfwGetTime()), glm::vec3(0.5f, 1.0f, 0.0f));
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-    const auto projection = glm::perspective(glm::radians(45.0f), static_cast<float>(size.x) / static_cast<float>(size.y), 0.1f, 100.0f);
+    constexpr auto model = glm::mat4(1.0f);
+    const auto projection = glm::perspective(glm::radians(control.fov), static_cast<float>(control.width) / static_cast<float>(control.height), 0.1f, 100.0f);
 
     _shader.setMat4("model", model);
-    _shader.setMat4("view", view);
+    _shader.setMat4("view", control.view);
     _shader.setMat4("projection", projection);
 
     glBindVertexArray(_vao);

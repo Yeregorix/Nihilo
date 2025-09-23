@@ -20,25 +20,18 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_RENDERER_HPP
-#define NIHILO_RENDERER_HPP
+#ifndef NIHILO_CONTROL_HPP
+#define NIHILO_CONTROL_HPP
 
-#include "control.hpp"
-#include "shader.hpp"
+#include "glm/glm.hpp"
 
-class Renderer {
-    public:
-
-    Renderer();
-
-    ~Renderer();
-
-    void render(const ControlSnapshot& control) const;
-
-    private:
-
-    Shader _shader;
-    unsigned int _vao, _vbo, _ebo;
+/**
+ * Shared data between control and render threads.
+ */
+struct ControlSnapshot {
+    int width, height;
+    float fov;
+    glm::mat4 view;
 };
 
-#endif //NIHILO_RENDERER_HPP
+#endif //NIHILO_CONTROL_HPP

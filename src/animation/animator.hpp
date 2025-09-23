@@ -23,6 +23,10 @@
 #ifndef NIHILO_ANIMATOR_HPP
 #define NIHILO_ANIMATOR_HPP
 
+#include <atomic>
+
+#include "camera.hpp"
+#include "controller.hpp"
 #include "window.hpp"
 #include "renderer.hpp"
 
@@ -35,7 +39,7 @@ class Animator {
 
     ~Animator();
 
-    void updateControls() const;
+    void updateControls();
 
     void beforeRender() const;
 
@@ -45,9 +49,14 @@ class Animator {
 
     private:
 
+    void updateControlSnapshot();
+
     Manager& _manager;
+    Camera _camera;
+    Controller _controller;
     Window _window;
     Renderer _renderer;
+    std::atomic<ControlSnapshot> _cameraSnapshot;
 };
 
 

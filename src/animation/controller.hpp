@@ -20,25 +20,39 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_RENDERER_HPP
-#define NIHILO_RENDERER_HPP
+#ifndef NIHILO_CONTROLLER_HPP
+#define NIHILO_CONTROLLER_HPP
 
-#include "control.hpp"
-#include "shader.hpp"
+#include <optional>
 
-class Renderer {
+#include "camera.hpp"
+
+class Controller {
     public:
 
-    Renderer();
+    explicit Controller(Camera& camera);
 
-    ~Renderer();
+    void keyPressed(int key, char ch);
 
-    void render(const ControlSnapshot& control) const;
+    void keyReleased(int key, char ch);
+
+    void mouseReleased();
+
+    void mouseDragged(glm::vec2 pos);
+
+    void scrolled(double value) const;
+
+    void update();
 
     private:
 
-    Shader _shader;
-    unsigned int _vao, _vbo, _ebo;
+    [[nodiscard]] float getZoomFactor() const;
+
+    Camera& _camera;
+    bool _zoomIn{}, _zoomOut{}, _left{}, _right{}, _forward{}, _backward{}, _up{}, _down{}, _speedUp{}, _slowDown{};
+    float _speed = 1;
+    bool _mouseDragging;
+    glm::vec2 _previousMousePosition;
 };
 
-#endif //NIHILO_RENDERER_HPP
+#endif //NIHILO_CONTROLLER_HPP

@@ -12,8 +12,13 @@ add_executable(Nihilo main.cpp
         animation/window.cpp
         animation/window.hpp
         animation/shader.cpp
-        animation/shader.hpp)
+        animation/shader.hpp
+        animation/camera.cpp
+        animation/camera.hpp
+        animation/controller.cpp
+        animation/controller.hpp
+        animation/control.hpp)
 
 find_package(OpenGL REQUIRED)
 
-target_link_libraries(Nihilo glfw OpenGL::GL glad glm::glm)
+target_link_libraries(Nihilo PRIVATE glfw OpenGL::GL glad glm::glm atomic)

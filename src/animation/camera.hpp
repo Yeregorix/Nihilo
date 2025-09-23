@@ -20,25 +20,45 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_RENDERER_HPP
-#define NIHILO_RENDERER_HPP
+#ifndef NIHILO_CAMERA_HPP
+#define NIHILO_CAMERA_HPP
 
-#include "control.hpp"
-#include "shader.hpp"
+#include "glm/glm.hpp"
 
-class Renderer {
+constexpr float MIN_FOV = 1, MAX_FOV = 80, DEFAULT_FOV = 50;
+
+class Camera {
     public:
 
-    Renderer();
+    glm::vec3 position;
 
-    ~Renderer();
+    Camera();
 
-    void render(const ControlSnapshot& control) const;
+    [[nodiscard]] float getFOV() const;
+
+    void setFOV(float value);
+
+    void resetFOV();
+
+    void zoom(float delta);
+
+    void move(glm::vec3 delta);
+
+    void resetOrientation();
+
+    void pitch(float angle);
+
+    void yaw(float angle);
+
+    void roll(float angle);
+
+    [[nodiscard]] glm::mat4 getView() const;
 
     private:
 
-    Shader _shader;
-    unsigned int _vao, _vbo, _ebo;
+    float _fov;
+    glm::vec3 _left, _up, _forward;
 };
 
-#endif //NIHILO_RENDERER_HPP
+
+#endif //NIHILO_CAMERA_HPP
