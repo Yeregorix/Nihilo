@@ -23,7 +23,10 @@
 #ifndef NIHILO_WINDOW_HPP
 #define NIHILO_WINDOW_HPP
 
+#include <atomic>
+
 #include "GLFW/glfw3.h"
+#include "glm/vec2.hpp"
 
 class Window {
     public:
@@ -32,15 +35,24 @@ class Window {
 
     ~Window();
 
+    void center() const;
+
+    void setContext() const;
+
+    static void clearContext();
+
     [[nodiscard]] bool shouldClose() const;
 
     void update() const;
 
-    [[nodiscard]] float aspect() const;
+    [[nodiscard]] glm::uvec2 size() const;
+
+    bool isKeyPressed(int key) const;
 
     private:
 
     GLFWwindow* _window;
+    std::atomic<glm::uvec2> _size;
 };
 
 

@@ -32,7 +32,7 @@ class Renderer {
 
     ~Renderer();
 
-    void render(float aspect) const;
+    void render(glm::uvec2 size) const;
 
     private:
 

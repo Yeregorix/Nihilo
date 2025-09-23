@@ -40,7 +40,7 @@ class Manager {
 
     Animator _animator;
     Simulator _simulator;
-    Loop _animationLoop, _simulationLoop;
+    Loop _controlLoop, _renderLoop, _simulationLoop;
 };
 
 

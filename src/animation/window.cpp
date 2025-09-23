@@ -26,6 +26,10 @@
 
 #include "window.hpp"
 
+#include <iostream>
+
+#include "glm/vec2.hpp"
+
 Window::Window() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -37,22 +41,84 @@ Window::Window() {
         throw std::runtime_error("Failed to create window");
     }
 
-    glfwMakeContextCurrent(_window);
+    setContext();
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
         throw std::runtime_error("Failed to initialize GLAD");
     }
 
-    glViewport(0, 0, 800, 600);
+    glfwSetWindowUserPointer(_window, this);
 
-    glfwSetFramebufferSizeCallback(_window, [](GLFWwindow*, const int width, const int height) {
-        glViewport(0, 0, width, height);
+    glfwSetFramebufferSizeCallback(_window, [](GLFWwindow* window, const int width, const int height) {
+        if (const auto _this = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
+            _this->_size = glm::uvec2(width, height);
+        }
     });
+
+    int width, height;
+    glfwGetFramebufferSize(_window, &width, &height);
+    _size = glm::uvec2(width, height);
 }
 
 Window::~Window() {
     glfwDestroyWindow(_window);
     _window = nullptr;
+}
+
+void Window::center() const {
+    int sizeX = 0, sizeY = 0;
+    glfwGetWindowSize(_window, &sizeX, &sizeY);
+
+    int posX = 0, posY = 0;
+    glfwGetWindowPos(_window, &posX, &posY);
+
+    int monitor_count = 0;
+    GLFWmonitor** m = glfwGetMonitors(&monitor_count);
+    if (!m) {
+        return;
+    }
+
+    int monitorX = 0, monitorY = 0;
+    int maxArea = 0;
+    int targetX = 0, targetY = 0;
+    for (int j = 0; j < monitor_count ; ++j) {
+        glfwGetMonitorPos(m[j], &monitorX, &monitorY);
+        const GLFWvidmode* mode = glfwGetVideoMode(m[j]);
+        if (!mode) {
+            continue;
+        }
+
+        const int minX = std::max(monitorX, posX);
+        const int minY = std::max(monitorY, posY);
+
+        const int maxX = std::min(monitorX + mode->width, posX + sizeX);
+        const int maxY = std::min(monitorY + mode->height, posY + sizeY);
+
+        if (const int area = std::max(maxX - minX, 0) * std::max(maxY - minY, 0); area > maxArea) {
+            targetX = monitorX + (mode->width - sizeX) / 2;
+            targetY = monitorY + (mode->height - sizeY) / 2;
+            maxArea = area;
+        }
+    }
+
+    if (maxArea) {
+        glfwSetWindowPos(_window, targetX, targetY);
+        return;
+    }
+
+    if (GLFWmonitor* primary = glfwGetPrimaryMonitor()) {
+        if (const GLFWvidmode* desktop = glfwGetVideoMode(primary)) {
+            glfwSetWindowPos(_window, (desktop->width - sizeX) / 2, (desktop->height - sizeY) / 2);
+        }
+    }
+}
+
+void Window::setContext() const {
+    glfwMakeContextCurrent(_window);
+}
+
+void Window::clearContext() {
+    glfwMakeContextCurrent(nullptr);
 }
 
 bool Window::shouldClose() const {
@@ -63,8 +129,10 @@ void Window::update() const {
     glfwSwapBuffers(_window);
 }
 
-float Window::aspect() const {
-    int width, height;
-    glfwGetFramebufferSize(_window, &width, &height);
-    return static_cast<float>(width) / static_cast<float>(height);
+glm::uvec2 Window::size() const {
+    return _size;
+}
+
+bool Window::isKeyPressed(const int key) const {
+    return glfwGetKey(_window, key) == GLFW_PRESS;
 }

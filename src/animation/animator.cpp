@@ -21,20 +21,33 @@
  */
 
 #include "animator.hpp"
+
 #include "../manager.hpp"
 
 Animator::Animator(Manager& manager) : _manager(manager) {
+    _window.center();
+    Window::clearContext();
 }
 
-void Animator::update() const {
+void Animator::updateControls() const {
     glfwPollEvents();
+
     // TODO controls
 
     if (_window.shouldClose()) {
         _manager.stop();
-        return;
     }
+}
 
-    _renderer.render(_window.aspect());
+void Animator::beforeRender() const {
+    _window.setContext();
+}
+
+void Animator::updateRender() const {
+    _renderer.render(_window.size());
     _window.update();
+}
+
+void Animator::afterRender() {
+    Window::clearContext();
 }

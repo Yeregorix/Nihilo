@@ -26,19 +26,32 @@
 
 Manager::Manager() :
 _animator(*this),
-_animationLoop([this] { _animator.update(); }),
+_controlLoop([this] { _animator.updateControls(); }),
+_renderLoop([this] { _animator.updateRender(); }),
 _simulationLoop([this] { _simulator.update(); }) {
-    _animationLoop.setTargetFrequency(60);
+    _controlLoop.setTargetFrequency(60);
+    _renderLoop.setTargetFrequency(60);
     _simulationLoop.setTargetFrequency(30);
 }
 
 void Manager::run() {
-    std::thread simulationThread([this] { _simulationLoop.run(); });
-    _animationLoop.run();
+    std::thread renderThread([this] {
+        _animator.beforeRender();
+        _renderLoop.run();
+        Animator::afterRender();
+    });
+    std::thread simulationThread([this] {
+        _simulationLoop.run();
+    });
+
+    _controlLoop.run();
+
     simulationThread.join();
+    renderThread.join();
 }
 
 void Manager::stop() {
-    _animationLoop.stop();
+    _controlLoop.stop();
+    _renderLoop.stop();
     _simulationLoop.stop();
 }
