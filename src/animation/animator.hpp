@@ -33,6 +33,8 @@ class Animator {
 
     explicit Animator(Manager& manager);
 
+    ~Animator();
+
     void updateControls() const;
 
     void beforeRender() const;

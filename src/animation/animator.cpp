@@ -29,6 +29,10 @@ Animator::Animator(Manager& manager) : _manager(manager) {
     Window::clearContext();
 }
 
+Animator::~Animator() {
+    _window.setContext();
+}
+
 void Animator::updateControls() const {
     glfwPollEvents();
 
