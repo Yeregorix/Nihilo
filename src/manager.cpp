@@ -28,7 +28,9 @@ Manager::Manager() :
 _animator(*this),
 _controlLoop([this] { _animator.updateControls(); }),
 _renderLoop([this] { _animator.updateRender(); }),
-_simulationLoop([this] { _simulator.update(); }) {
+_simulationLoop([this] {
+    _animator.simulationSnapshot = _simulator.update();
+}) {
     _controlLoop.setTargetFrequency(60);
     _renderLoop.setTargetFrequency(60);
     _simulationLoop.setTargetFrequency(30);

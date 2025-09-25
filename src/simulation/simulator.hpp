@@ -23,12 +23,16 @@
 #ifndef NIHILO_SIMULATOR_HPP
 #define NIHILO_SIMULATOR_HPP
 
+#include <memory>
+
+#include "simulation.hpp"
+
 class Simulator {
     public:
 
     Simulator();
 
-    void update();
+    std::shared_ptr<SimulationSnapshot> update();
 };
 
 #endif //NIHILO_SIMULATOR_HPP

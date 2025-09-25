@@ -24,7 +24,7 @@
 
 #include "../manager.hpp"
 
-Animator::Animator(Manager& manager) : _manager(manager), _controller(_camera), _window(_controller) {
+Animator::Animator(Manager& manager) : simulationSnapshot(), _manager(manager), _controller(_camera), _window(_controller) {
     _window.center();
     Window::clearContext();
     updateControlSnapshot();
@@ -49,8 +49,16 @@ void Animator::beforeRender() const {
     _window.setContext();
 }
 
-void Animator::updateRender() const {
-    _renderer.render(_cameraSnapshot);
+void Animator::updateRender() {
+    const std::shared_ptr<SimulationSnapshot> snapshot = simulationSnapshot;
+    if (snapshot == nullptr) {
+        return;
+    }
+
+    const bool changed = snapshot.get() != _lastSimulationSnapshot.lock().get();
+    _lastSimulationSnapshot = snapshot;
+    _renderer.render(_cameraSnapshot, *snapshot, changed);
+
     _window.update();
 }
 

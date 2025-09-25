@@ -20,26 +20,22 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_RENDERER_HPP
-#define NIHILO_RENDERER_HPP
+#ifndef NIHILO_SIMULATION_HPP
+#define NIHILO_SIMULATION_HPP
 
-#include "control.hpp"
-#include "shader.hpp"
-#include "../simulation/simulation.hpp"
+#include <vector>
+#include "glm/glm.hpp"
 
-class Renderer {
-    public:
-
-    Renderer();
-
-    ~Renderer();
-
-    void render(const ControlSnapshot& control, const SimulationSnapshot& simulation, bool simulationChanged) const;
-
-    private:
-
-    Shader _particleShader;
-    unsigned int _vao, _vbo;
+struct ParticleSnapshot {
+    glm::vec3 position;
+    float radius;
 };
 
-#endif //NIHILO_RENDERER_HPP
+/**
+ * Shared data between simulation and render threads.
+ */
+struct SimulationSnapshot {
+    std::vector<ParticleSnapshot> particles;
+};
+
+#endif //NIHILO_SIMULATION_HPP

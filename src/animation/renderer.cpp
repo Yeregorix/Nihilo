@@ -22,7 +22,7 @@
 
 #include "renderer.hpp"
 
-#include <stdexcept>
+#include <iostream>
 
 #include "glad.h"
 #include "GLFW/glfw3.h"
@@ -31,111 +31,118 @@
 #include "glm/ext/matrix_transform.hpp"
 
 // language=glsl
-const std::string vertexShader = R"(
+const std::string particleVertex = R"(
 #version 330 core
 
 layout (location = 0) in vec3 position;
-layout (location = 1) in vec3 colorIn;
+layout (location = 1) in float radius;
 
-out vec3 color;
+out float geomRadius;
 
-uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
 void main() {
-    gl_Position = projection * view * model * vec4(position, 1.0);
-    color = colorIn;
+    gl_Position = vec4(position, 1);
+    geomRadius = radius;
 }
 )";
 
 // language=glsl
-const std::string fragmentShader = R"(
+const std::string particleGeometry = R"(
 #version 330 core
 
-in vec3 color;
-out vec4 FragColor;
+layout (points) in;
+layout (triangle_strip, max_vertices = 4) out;
+
+in float[] geomRadius;
+
+out float radius2;
+out vec2 offset;
+
+uniform mat4 view;
+uniform mat4 projection;
 
 void main() {
-    FragColor = vec4(color, 1.0);
+    vec4 pos = view * gl_in[0].gl_Position;
+    float radius = geomRadius[0];
+    radius2 = radius * radius;
+    offset = vec2(-radius, -radius);
+    gl_Position = projection * (pos + vec4(offset, 0, 0));
+    EmitVertex();
+    offset = vec2(radius, -radius);
+    gl_Position = projection * (pos + vec4(offset, 0, 0));
+    EmitVertex();
+    offset = vec2(-radius, radius);
+    gl_Position = projection * (pos + vec4(offset, 0, 0));
+    EmitVertex();
+    offset = vec2(radius, radius);
+    gl_Position = projection * (pos + vec4(offset, 0, 0));
+    EmitVertex();
+    EndPrimitive();
 }
 )";
 
-Renderer::Renderer() : _shader(vertexShader, fragmentShader), _vao{}, _vbo{}, _ebo{} {
-    glEnable(GL_DEPTH_TEST);
+// language=glsl
+const std::string particleFragment = R"(
+#version 330 core
 
-    constexpr float vertices[] = {
-        // Positions          // Colors
-        -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f
-    };
-    constexpr unsigned int indices[] = {
-        // Front face
-        0, 1, 2, 2, 3, 0,
-        // Back face
-        4, 5, 6, 6, 7, 4,
-        // Left face
-        4, 0, 3, 3, 7, 4,
-        // Right face
-        1, 5, 6, 6, 2, 1,
-        // Top face
-        3, 2, 6, 6, 7, 3,
-        // Bottom face
-        4, 5, 1, 1, 0, 4,
-    };
+in float radius2;
+in vec2 offset;
+
+out vec4 color;
+
+void main() {
+    float offset2 = dot(offset, offset);
+    if (offset2 > radius2) {
+        discard;
+    }
+    color = vec4(1, 1, 1, 1);
+}
+)";
+
+Renderer::Renderer() : _particleShader(particleVertex, particleGeometry, particleFragment), _vao{}, _vbo{} {
+    glEnable(GL_DEPTH_TEST);
 
     glGenVertexArrays(1, &_vao);
     glGenBuffers(1, &_vbo);
-    glGenBuffers(1, &_ebo);
 
     glBindVertexArray(_vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ParticleSnapshot), reinterpret_cast<void *>(offsetof(ParticleSnapshot, position)));
     glEnableVertexAttribArray(0);
 
-    // Color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
+    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(ParticleSnapshot), reinterpret_cast<void *>(offsetof(ParticleSnapshot, radius)));
     glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 Renderer::~Renderer() {
     glDeleteVertexArrays(1, &_vao);
     glDeleteBuffers(1, &_vbo);
-    glDeleteBuffers(1, &_ebo);
 }
 
-void Renderer::render(const ControlSnapshot& control) const {
+void Renderer::render(const ControlSnapshot& control, const SimulationSnapshot& simulation, const bool simulationChanged) const {
+    if (simulationChanged) {
+        glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(ParticleSnapshot) * simulation.particles.size(), &simulation.particles[0], GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
     glViewport(0, 0, control.width, control.height);
     glClearColor(0, 0, 0, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    _shader.use();
+    const auto projection = glm::perspective(glm::radians(control.fov), static_cast<float>(control.width) / static_cast<float>(control.height), 0.01f, 10000.0f);
 
-    constexpr auto model = glm::mat4(1.0f);
-    const auto projection = glm::perspective(glm::radians(control.fov), static_cast<float>(control.width) / static_cast<float>(control.height), 0.1f, 100.0f);
-
-    _shader.setMat4("model", model);
-    _shader.setMat4("view", control.view);
-    _shader.setMat4("projection", projection);
+    _particleShader.use();
+    _particleShader.setMat4("view", control.view);
+    _particleShader.setMat4("projection", projection);
 
     glBindVertexArray(_vao);
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+    glDrawArrays(GL_POINTS, 0, simulation.particles.size());
 }

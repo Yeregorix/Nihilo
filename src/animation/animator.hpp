@@ -24,6 +24,7 @@
 #define NIHILO_ANIMATOR_HPP
 
 #include <atomic>
+#include <memory>
 
 #include "camera.hpp"
 #include "controller.hpp"
@@ -35,6 +36,8 @@ class Manager;
 class Animator {
     public:
 
+    std::atomic<std::shared_ptr<SimulationSnapshot>> simulationSnapshot;
+
     explicit Animator(Manager& manager);
 
     ~Animator();
@@ -43,7 +46,7 @@ class Animator {
 
     void beforeRender() const;
 
-    void updateRender() const;
+    void updateRender();
 
     static void afterRender();
 
@@ -57,6 +60,7 @@ class Animator {
     Window _window;
     Renderer _renderer;
     std::atomic<ControlSnapshot> _cameraSnapshot;
+    std::weak_ptr<SimulationSnapshot> _lastSimulationSnapshot;
 };
 
 

@@ -22,8 +22,25 @@
 
 #include "simulator.hpp"
 
+#include "glm/gtc/random.hpp"
+
 Simulator::Simulator() = default;
 
-void Simulator::update() {
+std::shared_ptr<SimulationSnapshot> Simulator::update() {
     // TODO
+
+    const auto snapshot = std::make_shared<SimulationSnapshot>();
+
+    std::vector<ParticleSnapshot>& particles = snapshot->particles;
+    constexpr std::size_t count = 1000;
+    particles.reserve(count);
+
+    std::srand(0);
+    constexpr glm::vec3 min(-10, -10, -10), max(10, 10, 10);
+    for (unsigned int i = 0; i < count; i++) {
+        ParticleSnapshot p(glm::linearRand(min, max), 0.1);
+        particles.push_back(p);
+    }
+
+    return snapshot;
 }
