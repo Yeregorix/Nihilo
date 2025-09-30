@@ -29,7 +29,8 @@ _animator(*this),
 _controlLoop([this] { _animator.updateControls(); }),
 _renderLoop([this] { _animator.updateRender(); }),
 _simulationLoop([this] {
-    _animator.simulationSnapshot = _simulator.update();
+    _simulator.update();
+    _animator.simulationSnapshot = _simulator.snapshot();
 }) {
     _controlLoop.setTargetFrequency(60);
     _renderLoop.setTargetFrequency(60);

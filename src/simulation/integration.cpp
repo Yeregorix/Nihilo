@@ -20,41 +20,9 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_SIMULATION_HPP
-#define NIHILO_SIMULATION_HPP
+#include "integration.hpp"
 
-#include <vector>
-#include "glm/glm.hpp"
-
-struct ParticleSnapshot {
-    glm::vec3 position;
-    float radius;
-};
-
-/**
- * Shared data between simulation and render threads.
- */
-struct SimulationSnapshot {
-    std::vector<ParticleSnapshot> particles;
-};
-
-struct ParticleInfo {
-    float mass;
-    float radius;
-};
-
-struct ParticleState {
-    glm::vec3 position;
-    glm::vec3 speed;
-};
-
-struct Particle : ParticleInfo {
-    ParticleState state[2];
-};
-
-struct Simulation {
-    unsigned long long age;
-    std::vector<Particle> particles;
-};
-
-#endif //NIHILO_SIMULATION_HPP
+void applyEuler(const ParticleState& current, ParticleState& next, const float timeStep, const Accelerator& accelerator) {
+    next.speed = current.speed + timeStep * accelerator(current);
+    next.position = current.position + timeStep * next.speed;
+}

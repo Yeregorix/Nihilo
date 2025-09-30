@@ -20,41 +20,32 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_SIMULATION_HPP
-#define NIHILO_SIMULATION_HPP
+#ifndef NIHILO_MOTION_HPP
+#define NIHILO_MOTION_HPP
 
-#include <vector>
 #include "glm/glm.hpp"
 
-struct ParticleSnapshot {
-    glm::vec3 position;
-    float radius;
-};
+/**
+ * Computes acceleration from force using Newton's second law of motion.
+ * Uses the classic formula of momentum.
+ *
+ * @param force Force applied to the body
+ * @param mass Mass of the body
+ * @return
+ */
+glm::vec3 classicAcceleration(const glm::vec3& force, float mass);
 
 /**
- * Shared data between simulation and render threads.
+ * Computes acceleration from force using Newton's second law of motion.
+ * Uses the relativist formula of momentum.
+ *
+ * See <a href="https://en.wikipedia.org/wiki/Acceleration_(special_relativity)#Acceleration_and_force">Wikipedia</a> for the formula.
+ *
+ * @param force Force applied to the body
+ * @param mass Mass of the body
+ * @param speed Speed of the body
+ * @return
  */
-struct SimulationSnapshot {
-    std::vector<ParticleSnapshot> particles;
-};
+glm::vec3 relativistAcceleration(const glm::vec3& force, float mass, const glm::vec3& speed);
 
-struct ParticleInfo {
-    float mass;
-    float radius;
-};
-
-struct ParticleState {
-    glm::vec3 position;
-    glm::vec3 speed;
-};
-
-struct Particle : ParticleInfo {
-    ParticleState state[2];
-};
-
-struct Simulation {
-    unsigned long long age;
-    std::vector<Particle> particles;
-};
-
-#endif //NIHILO_SIMULATION_HPP
+#endif //NIHILO_MOTION_HPP

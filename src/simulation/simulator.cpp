@@ -20,25 +20,67 @@
  * SOFTWARE.
  */
 
+#include <iostream>
+
 #include "simulator.hpp"
-
+#include "integration.hpp"
 #include "glm/gtc/random.hpp"
+#include "force.hpp"
+#include "motion.hpp"
 
-Simulator::Simulator() = default;
+Simulator::Simulator() : _reset(true) {
+    std::vector<Particle>& particles = _simulation.particles;
+    constexpr std::size_t count = 100;
+    particles.reserve(count);
 
-std::shared_ptr<SimulationSnapshot> Simulator::update() {
-    // TODO
+    Particle particle;
+    particle.radius = 1.0f;
+    particle.mass = 1000000000.0f;
 
+    for (unsigned int i = 0; i < count; i++) {
+        particles.push_back(particle);
+    }
+}
+
+void Simulator::reset() {
+    _reset = true;
+}
+
+void Simulator::update() {
+    if (_reset.exchange(false)) {
+        _simulation.age = 0;
+
+        std::srand(0);
+        for (Particle& particle : _simulation.particles) {
+            particle.state[0] = { glm::ballRand(100.0f), glm::sphericalRand(0.1f) };
+        }
+    } else {
+        const auto previousIndex = _simulation.age % 2;
+        _simulation.age++;
+        const auto nextIndex = _simulation.age % 2;
+
+        for (std::vector<Particle>& particles = _simulation.particles; Particle& p1 : particles) {
+            applyEuler(p1.state[previousIndex], p1.state[nextIndex], 1.0f, [p1, particles, previousIndex](const ParticleState& state1) {
+                glm::vec3 force(0);
+                for (const Particle& p2 : particles) {
+                    const ParticleState& state2 = p2.state[previousIndex];
+                    force += gravity(p1.mass, p2.mass, state1.position, state2.position, 1.0f);
+                }
+                return classicAcceleration(force, p1.mass);
+            });
+        }
+    }
+}
+
+std::shared_ptr<SimulationSnapshot> Simulator::snapshot() const {
     const auto snapshot = std::make_shared<SimulationSnapshot>();
 
     std::vector<ParticleSnapshot>& particles = snapshot->particles;
-    constexpr std::size_t count = 1000;
-    particles.reserve(count);
+    particles.reserve(_simulation.particles.size());
 
-    std::srand(0);
-    constexpr glm::vec3 min(-10, -10, -10), max(10, 10, 10);
-    for (unsigned int i = 0; i < count; i++) {
-        ParticleSnapshot p(glm::linearRand(min, max), 0.1);
+    const auto index = _simulation.age % 2;
+    for (const Particle& particle : _simulation.particles) {
+        ParticleSnapshot p(particle.state[index].position, particle.radius);
         particles.push_back(p);
     }
 

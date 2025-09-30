@@ -26,9 +26,9 @@
 #include "glm/glm.hpp"
 #include "glm/ext/scalar_constants.hpp"
 
-#define GLM_ENABLE_EXPERIMENTAL
 #include <iostream>
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/norm.hpp"
 
 Controller::Controller(Camera &camera) : _camera(camera), _mouseDragging(false), _previousMousePosition(0) {

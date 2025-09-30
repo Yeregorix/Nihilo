@@ -20,41 +20,20 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_SIMULATION_HPP
-#define NIHILO_SIMULATION_HPP
+#include "motion.hpp"
 
-#include <vector>
-#include "glm/glm.hpp"
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/norm.hpp"
 
-struct ParticleSnapshot {
-    glm::vec3 position;
-    float radius;
-};
+// speed of light in vacuum in m/s
+constexpr float C = 299792458.0;
+constexpr float C2 = C * C;
 
-/**
- * Shared data between simulation and render threads.
- */
-struct SimulationSnapshot {
-    std::vector<ParticleSnapshot> particles;
-};
+glm::vec3 classicAcceleration(const glm::vec3& force, const float mass) {
+    return force / mass;
+}
 
-struct ParticleInfo {
-    float mass;
-    float radius;
-};
-
-struct ParticleState {
-    glm::vec3 position;
-    glm::vec3 speed;
-};
-
-struct Particle : ParticleInfo {
-    ParticleState state[2];
-};
-
-struct Simulation {
-    unsigned long long age;
-    std::vector<Particle> particles;
-};
-
-#endif //NIHILO_SIMULATION_HPP
+glm::vec3 relativistAcceleration(const glm::vec3& force, const float mass, const glm::vec3& speed) {
+    const float lorentz = 1.0f / std::sqrt(1.0f - glm::length2(speed) / C2);
+    return (force - (glm::cross(force, speed) * speed / C2)) / (mass * lorentz);
+}

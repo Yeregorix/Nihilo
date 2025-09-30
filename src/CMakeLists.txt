@@ -18,7 +18,13 @@ add_executable(Nihilo main.cpp
         animation/controller.cpp
         animation/controller.hpp
         animation/control.hpp
-        simulation/simulation.hpp)
+        simulation/simulation.hpp
+        simulation/motion.cpp
+        simulation/motion.hpp
+        simulation/force.cpp
+        simulation/force.hpp
+        simulation/integration.cpp
+        simulation/integration.hpp)
 
 find_package(OpenGL REQUIRED)
 

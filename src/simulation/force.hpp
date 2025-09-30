@@ -20,41 +20,24 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_SIMULATION_HPP
-#define NIHILO_SIMULATION_HPP
+#ifndef NIHILO_FORCE_HPP
+#define NIHILO_FORCE_HPP
 
-#include <vector>
 #include "glm/glm.hpp"
 
-struct ParticleSnapshot {
-    glm::vec3 position;
-    float radius;
-};
-
 /**
- * Shared data between simulation and render threads.
+ * Computes the gravitational force exerted by particle 2 on particle 1.
+ *
+ * The softening parameter prevents the force from going to infinity when particles are too close.
+ * See <a href="https://en.wikipedia.org/wiki/N-body_simulation#Softening">Wikipedia</a>.
+ *
+ * @param mass1 Mass of particle 1
+ * @param mass2 Mass of particle 2
+ * @param position1 Position of particle 1
+ * @param position2 Position of particle 2
+ * @param softSq Squared value of the softening parameter
+ * @return The force received by particle 1
  */
-struct SimulationSnapshot {
-    std::vector<ParticleSnapshot> particles;
-};
+glm::vec3 gravity(float mass1, float mass2, const glm::vec3& position1, const glm::vec3& position2, float softSq);
 
-struct ParticleInfo {
-    float mass;
-    float radius;
-};
-
-struct ParticleState {
-    glm::vec3 position;
-    glm::vec3 speed;
-};
-
-struct Particle : ParticleInfo {
-    ParticleState state[2];
-};
-
-struct Simulation {
-    unsigned long long age;
-    std::vector<Particle> particles;
-};
-
-#endif //NIHILO_SIMULATION_HPP
+#endif //NIHILO_FORCE_HPP

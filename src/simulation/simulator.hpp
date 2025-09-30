@@ -23,6 +23,7 @@
 #ifndef NIHILO_SIMULATOR_HPP
 #define NIHILO_SIMULATOR_HPP
 
+#include <atomic>
 #include <memory>
 
 #include "simulation.hpp"
@@ -32,7 +33,16 @@ class Simulator {
 
     Simulator();
 
-    std::shared_ptr<SimulationSnapshot> update();
+    void reset();
+
+    void update();
+
+    std::shared_ptr<SimulationSnapshot> snapshot() const;
+
+    private:
+
+    std::atomic<bool> _reset;
+    Simulation _simulation;
 };
 
 #endif //NIHILO_SIMULATOR_HPP

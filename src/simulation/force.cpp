@@ -20,41 +20,19 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_SIMULATION_HPP
-#define NIHILO_SIMULATION_HPP
+#include "force.hpp"
 
-#include <vector>
-#include "glm/glm.hpp"
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/norm.hpp"
 
-struct ParticleSnapshot {
-    glm::vec3 position;
-    float radius;
-};
+// gravitational constant in SI unit
+constexpr float G = 6.67430e-11f;
 
-/**
- * Shared data between simulation and render threads.
- */
-struct SimulationSnapshot {
-    std::vector<ParticleSnapshot> particles;
-};
-
-struct ParticleInfo {
-    float mass;
-    float radius;
-};
-
-struct ParticleState {
-    glm::vec3 position;
-    glm::vec3 speed;
-};
-
-struct Particle : ParticleInfo {
-    ParticleState state[2];
-};
-
-struct Simulation {
-    unsigned long long age;
-    std::vector<Particle> particles;
-};
-
-#endif //NIHILO_SIMULATION_HPP
+glm::vec3 gravity(const float mass1, const float mass2, const glm::vec3& position1, const glm::vec3& position2, const float softSq) {
+    const glm::vec3 delta = position2 - position1;
+    const float length2 = glm::length2(delta);
+    if (length2 < glm::epsilon<float>()) {
+        return glm::vec3(0, 0, 0);
+    }
+    return delta * (G * mass1 * mass2 / ((length2 + softSq) * std::sqrt(length2)));
+}
