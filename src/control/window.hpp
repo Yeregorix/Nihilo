@@ -20,48 +20,36 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_ANIMATOR_HPP
-#define NIHILO_ANIMATOR_HPP
+#ifndef NIHILO_WINDOW_HPP
+#define NIHILO_WINDOW_HPP
 
-#include <atomic>
-#include <memory>
-
-#include "camera.hpp"
 #include "controller.hpp"
-#include "window.hpp"
-#include "renderer.hpp"
+#include "GLFW/glfw3.h"
 
-class Manager;
-
-class Animator {
+class Window {
     public:
 
-    std::atomic<std::shared_ptr<SimulationSnapshot>> simulationSnapshot;
+    explicit Window(Controller& controller);
 
-    explicit Animator(Manager& manager);
+    ~Window();
 
-    ~Animator();
+    void center() const;
 
-    void updateControls();
+    void setContext() const;
 
-    void beforeRender() const;
+    static void clearContext();
 
-    void updateRender();
+    [[nodiscard]] bool shouldClose() const;
 
-    static void afterRender();
+    void update() const;
+
+    void getSize(int& width, int& height) const;
 
     private:
 
-    void updateControlSnapshot();
-
-    Manager& _manager;
-    Camera _camera;
-    Controller _controller;
-    Window _window;
-    Renderer _renderer;
-    std::atomic<ControlSnapshot> _controlSnapshot;
-    std::weak_ptr<SimulationSnapshot> _lastSimulationSnapshot;
+    Controller& _controller;
+    GLFWwindow* _window;
 };
 
 
-#endif //NIHILO_ANIMATOR_HPP
+#endif //NIHILO_WINDOW_HPP

@@ -151,7 +151,7 @@ void Controller::mouseDragged(const glm::vec2 pos) {
 }
 
 void Controller::scrolled(const double value) const {
-    _camera.roll(value * -0.05f);
+    _camera.roll(static_cast<float>(value) * -0.05f);
 }
 
 void Controller::update() {

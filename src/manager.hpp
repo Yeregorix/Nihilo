@@ -24,7 +24,7 @@
 #define NIHILO_MANAGER_HPP
 
 #include "loop.hpp"
-#include "animation/animator.hpp"
+#include "animator.hpp"
 #include "simulation/simulator.hpp"
 
 class Manager {

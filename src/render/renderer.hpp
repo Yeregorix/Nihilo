@@ -23,12 +23,12 @@
 #ifndef NIHILO_RENDERER_HPP
 #define NIHILO_RENDERER_HPP
 
-#include "control.hpp"
+#include "../control/control.hpp"
+#include "../simulation/simulation.hpp"
 #include "font.hpp"
 #include "rectangle.hpp"
 #include "shader.hpp"
 #include "vertex.hpp"
-#include "../simulation/simulation.hpp"
 
 class Renderer {
     public:

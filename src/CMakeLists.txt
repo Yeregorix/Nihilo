@@ -1,23 +1,30 @@
 add_executable(Nihilo main.cpp
         loop.cpp
         loop.hpp
-        animation/animator.cpp
-        animation/animator.hpp
+        animator.cpp
+        animator.hpp
         manager.cpp
         manager.hpp
+        box.hpp
+        control/window.cpp
+        control/window.hpp
+        control/camera.cpp
+        control/camera.hpp
+        control/controller.cpp
+        control/controller.hpp
+        control/control.hpp
+        render/renderer.cpp
+        render/renderer.hpp
+        render/shader.cpp
+        render/shader.hpp
+        render/font.cpp
+        render/font.hpp
+        render/vertex.cpp
+        render/vertex.hpp
+        render/rectangle.cpp
+        render/rectangle.hpp
         simulation/simulator.cpp
         simulation/simulator.hpp
-        animation/renderer.cpp
-        animation/renderer.hpp
-        animation/window.cpp
-        animation/window.hpp
-        animation/shader.cpp
-        animation/shader.hpp
-        animation/camera.cpp
-        animation/camera.hpp
-        animation/controller.cpp
-        animation/controller.hpp
-        animation/control.hpp
         simulation/simulation.hpp
         simulation/motion.cpp
         simulation/motion.hpp
@@ -25,13 +32,7 @@ add_executable(Nihilo main.cpp
         simulation/force.hpp
         simulation/integration.cpp
         simulation/integration.hpp
-        animation/font.cpp
-        animation/font.hpp
-        box.hpp
-        animation/vertex.cpp
-        animation/vertex.hpp
-        animation/rectangle.cpp
-        animation/rectangle.hpp)
+)
 
 find_package(OpenGL REQUIRED)
 

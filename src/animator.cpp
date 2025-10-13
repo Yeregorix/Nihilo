@@ -21,8 +21,7 @@
  */
 
 #include "animator.hpp"
-
-#include "../manager.hpp"
+#include "manager.hpp"
 
 Animator::Animator(Manager& manager) : simulationSnapshot(), _manager(manager), _controller(_camera), _window(_controller) {
     _window.center();
