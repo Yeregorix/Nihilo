@@ -106,6 +106,8 @@ _font("SpaceMono-Regular.ttf") {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_SAMPLE_SHADING);
+    glMinSampleShading(1);
 
     _attributes.use();
     _buffer.use();
