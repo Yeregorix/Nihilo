@@ -28,6 +28,8 @@
 #include <stdexcept>
 #include <vector>
 
+#include "glm/gtc/type_ptr.hpp"
+
 unsigned int compileShader(const unsigned int type, const std::string& source) {
     const auto chars = source.c_str();
     const unsigned int id = glCreateShader(type);
@@ -43,6 +45,29 @@ unsigned int compileShader(const unsigned int type, const std::string& source) {
     }
 
     return id;
+}
+
+Uniform::Uniform(const int id) : _id(id) {
+}
+
+void Uniform::setInt(const int value) const {
+    glUniform1iv(_id, 1, &value);
+}
+
+void Uniform::setFloat(const float value) const {
+    glUniform1fv(_id, 1, &value);
+}
+
+void Uniform::setVec2(const glm::vec2& vec) const {
+    glUniform2fv(_id, 1, glm::value_ptr(vec));
+}
+
+void Uniform::setVec3(const glm::vec3& vec) const {
+    glUniform3fv(_id, 1, glm::value_ptr(vec));
+}
+
+void Uniform::setMat4(const glm::mat4& mat) const {
+    glUniformMatrix4fv(_id, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 Shader::Shader(const std::string& vertex, const std::string& geometry, const std::string& fragment) {
@@ -80,6 +105,6 @@ void Shader::use() const {
     glUseProgram(_id);
 }
 
-void Shader::setMat4(const std::string& name, const glm::mat4& mat) const {
-    glUniformMatrix4fv(glGetUniformLocation(_id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+Uniform Shader::uniform(const std::string &name) const {
+    return Uniform(glGetUniformLocation(_id, name.c_str()));
 }

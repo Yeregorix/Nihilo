@@ -37,10 +37,7 @@ const std::string particleVertex = R"(
 layout (location = 0) in vec3 position;
 layout (location = 1) in float radius;
 
-out float geomRadius;
-
-uniform mat4 view;
-uniform mat4 projection;
+flat out float geomRadius;
 
 void main() {
     gl_Position = vec4(position, 1);
@@ -55,9 +52,9 @@ const std::string particleGeometry = R"(
 layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;
 
-in float[] geomRadius;
+flat in float[] geomRadius;
 
-out float radius2;
+flat out float radius2;
 out vec2 offset;
 
 uniform mat4 view;
@@ -87,7 +84,7 @@ void main() {
 const std::string particleFragment = R"(
 #version 330 core
 
-in float radius2;
+flat in float radius2;
 in vec2 offset;
 
 out vec4 color;
@@ -101,48 +98,53 @@ void main() {
 }
 )";
 
-Renderer::Renderer() : _particleShader(particleVertex, particleGeometry, particleFragment), _vao{}, _vbo{} {
+Renderer::Renderer() :
+_shader(particleVertex, particleGeometry, particleFragment),
+_view(_shader.uniform("view")), _projection(_shader.uniform("projection")),
+_font("SpaceMono-Regular.ttf") {
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glGenVertexArrays(1, &_vao);
-    glGenBuffers(1, &_vbo);
-
-    glBindVertexArray(_vao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ParticleSnapshot), reinterpret_cast<void *>(offsetof(ParticleSnapshot, position)));
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(ParticleSnapshot), reinterpret_cast<void *>(offsetof(ParticleSnapshot, radius)));
-    glEnableVertexAttribArray(1);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-}
-
-Renderer::~Renderer() {
-    glDeleteVertexArrays(1, &_vao);
-    glDeleteBuffers(1, &_vbo);
+    _attributes.use();
+    _buffer.use();
+    VertexAttributes::setFloat(0, 3, sizeof(ParticleSnapshot), offsetof(ParticleSnapshot, position));
+    VertexAttributes::setFloat(1, 1, sizeof(ParticleSnapshot), offsetof(ParticleSnapshot, radius));
+    VertexBuffer::clearUse();
+    VertexAttributes::clearUse();
 }
 
 void Renderer::render(const ControlSnapshot& control, const SimulationSnapshot& simulation, const bool simulationChanged) const {
     if (simulationChanged) {
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(ParticleSnapshot) * simulation.particles.size(), &simulation.particles[0], GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        _buffer.use();
+        VertexBuffer::setData(simulation.particles, GL_DYNAMIC_DRAW);
+        VertexBuffer::clearUse();
     }
 
     glViewport(0, 0, control.width, control.height);
     glClearColor(0, 0, 0, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    const auto projection = glm::perspective(glm::radians(control.fov), static_cast<float>(control.width) / static_cast<float>(control.height), 0.01f, 10000.0f);
+    const float aspect = static_cast<float>(control.width) / static_cast<float>(control.height);
+    const auto projection = glm::perspective(glm::radians(control.fov), aspect, 0.01f, 10000.0f);
 
-    _particleShader.use();
-    _particleShader.setMat4("view", control.view);
-    _particleShader.setMat4("projection", projection);
+    _shader.use();
+    _view.setMat4(control.view);
+    _projection.setMat4(projection);
 
-    glBindVertexArray(_vao);
-    glDrawArrays(GL_POINTS, 0, simulation.particles.size());
+    _attributes.use();
+    VertexAttributes::draw(GL_POINTS, simulation.particles.size());
+    VertexAttributes::clearUse();
+
+    const std::string text = "Lorem ipsum dolor sit amet";
+
+    const glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(0.05, 0.05 * aspect, 0));
+    const glm::mat4 transformation = glm::translate(scale, glm::vec3(0));
+
+    Box2 box = _font.box(text);
+    box.inflate(glm::vec2(0.05));
+    // TODO background rectangle
+
+    constexpr glm::vec3 color(0.5, 0.8, 0.2);
+    _font.render(text, transformation, color);
 }

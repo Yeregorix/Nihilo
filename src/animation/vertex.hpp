@@ -20,29 +20,56 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_RENDERER_HPP
-#define NIHILO_RENDERER_HPP
+#ifndef NIHILO_VERTEX_HPP
+#define NIHILO_VERTEX_HPP
+#include <vector>
 
-#include "control.hpp"
-#include "font.hpp"
-#include "shader.hpp"
-#include "vertex.hpp"
-#include "../simulation/simulation.hpp"
+class VertexAttributes {
 
-class Renderer {
     public:
 
-    Renderer();
+    VertexAttributes();
 
-    void render(const ControlSnapshot& control, const SimulationSnapshot& simulation, bool simulationChanged) const;
+    ~VertexAttributes();
+
+    void use() const;
+
+    static void clearUse();
+
+    static void setFloat(unsigned int index, int size, int stride, unsigned int offset);
+
+    static void setByte(unsigned int index, int size, int stride, int offset);
+
+    static void draw(unsigned int mode, unsigned long long size);
 
     private:
 
-    Shader _shader;
-    Uniform _view, _projection;
-    VertexAttributes _attributes;
-    VertexBuffer _buffer;
-    Font _font;
+    unsigned int _id;
 };
 
-#endif //NIHILO_RENDERER_HPP
+class VertexBuffer {
+
+    public:
+
+    VertexBuffer();
+
+    ~VertexBuffer();
+
+    void use() const;
+
+    static void clearUse();
+
+    static void setData(unsigned long long size, const void* data, unsigned int usage);
+
+    template<typename T>
+    static void setData(const std::vector<T>& data, const unsigned int usage) {
+        setData(sizeof(T) * data.size(), &data[0], usage);
+    }
+
+    private:
+
+    unsigned int _id;
+};
+
+
+#endif //NIHILO_VERTEX_HPP

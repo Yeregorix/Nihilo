@@ -57,7 +57,7 @@ void Animator::updateRender() {
 
     const bool changed = snapshot.get() != _lastSimulationSnapshot.lock().get();
     _lastSimulationSnapshot = snapshot;
-    _renderer.render(_cameraSnapshot, *snapshot, changed);
+    _renderer.render(_controlSnapshot, *snapshot, changed);
 
     _window.update();
 }
@@ -71,5 +71,5 @@ void Animator::updateControlSnapshot() {
     _window.getSize(snapshot.width, snapshot.height);
     snapshot.fov = _camera.getFOV();
     snapshot.view = _camera.getView();
-    _cameraSnapshot = snapshot;
+    _controlSnapshot = snapshot;
 }

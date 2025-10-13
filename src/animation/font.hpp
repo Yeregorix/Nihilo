@@ -20,29 +20,43 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_RENDERER_HPP
-#define NIHILO_RENDERER_HPP
+#ifndef NIHILO_FONT_HPP
+#define NIHILO_FONT_HPP
 
-#include "control.hpp"
-#include "font.hpp"
+#include <string>
+
 #include "shader.hpp"
 #include "vertex.hpp"
-#include "../simulation/simulation.hpp"
+#include "glm/glm.hpp"
+#include "../box.hpp"
 
-class Renderer {
+struct Character {
+    glm::vec2 size;
+    glm::vec2 bearing;
+    float advance;
+};
+
+class Font {
+
     public:
 
-    Renderer();
+    explicit Font(const std::string& fontPath);
 
-    void render(const ControlSnapshot& control, const SimulationSnapshot& simulation, bool simulationChanged) const;
+    ~Font();
+
+    [[nodiscard]] Box2 box(const std::string& text) const;
+
+    void render(const std::string& text, const glm::mat4& transformation, const glm::vec3& color) const;
 
     private:
 
     Shader _shader;
-    Uniform _view, _projection;
+    Uniform _transformation, _color;
     VertexAttributes _attributes;
     VertexBuffer _buffer;
-    Font _font;
+    unsigned int _textureId{};
+    Character _chars[128]{};
 };
 
-#endif //NIHILO_RENDERER_HPP
+
+#endif //NIHILO_FONT_HPP

@@ -27,6 +27,27 @@
 
 #include "glm/glm.hpp"
 
+class Uniform {
+
+    public:
+
+    explicit Uniform(int id);
+
+    void setInt(int value) const;
+
+    void setFloat(float value) const;
+
+    void setVec2(const glm::vec2& vec) const;
+
+    void setVec3(const glm::vec3& vec) const;
+
+    void setMat4(const glm::mat4& mat) const;
+
+    private:
+
+    int _id;
+};
+
 class Shader {
     public:
 
@@ -36,7 +57,7 @@ class Shader {
 
     void use() const;
 
-    void setMat4(const std::string& name, const glm::mat4& mat) const;
+    [[nodiscard]] Uniform uniform(const std::string& name) const;
 
     private:
 

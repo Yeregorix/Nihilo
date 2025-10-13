@@ -59,7 +59,7 @@ class Animator {
     Controller _controller;
     Window _window;
     Renderer _renderer;
-    std::atomic<ControlSnapshot> _cameraSnapshot;
+    std::atomic<ControlSnapshot> _controlSnapshot;
     std::weak_ptr<SimulationSnapshot> _lastSimulationSnapshot;
 };
 

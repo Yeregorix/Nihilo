@@ -24,8 +24,13 @@ add_executable(Nihilo main.cpp
         simulation/force.cpp
         simulation/force.hpp
         simulation/integration.cpp
-        simulation/integration.hpp)
+        simulation/integration.hpp
+        animation/font.cpp
+        animation/font.hpp
+        box.hpp
+        animation/vertex.cpp
+        animation/vertex.hpp)
 
 find_package(OpenGL REQUIRED)
 
-target_link_libraries(Nihilo PRIVATE glfw OpenGL::GL glad glm::glm atomic)
+target_link_libraries(Nihilo PRIVATE glfw OpenGL::GL glad glm::glm freetype atomic)

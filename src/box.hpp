@@ -20,29 +20,30 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_RENDERER_HPP
-#define NIHILO_RENDERER_HPP
+#ifndef NIHILO_BOX_HPP
+#define NIHILO_BOX_HPP
 
-#include "control.hpp"
-#include "font.hpp"
-#include "shader.hpp"
-#include "vertex.hpp"
-#include "../simulation/simulation.hpp"
+#include "glm/glm.hpp"
 
-class Renderer {
+template <int N, typename T, glm::qualifier Q>
+class Box {
     public:
 
-    Renderer();
+    glm::vec<N, T, Q> min{}, max{};
 
-    void render(const ControlSnapshot& control, const SimulationSnapshot& simulation, bool simulationChanged) const;
+    void extend(const Box& other) {
+        for (int i = 0; i < N; i++) {
+            min[i] = std::min(min[i], other.min[i]);
+            max[i] = std::max(max[i], other.max[i]);
+        }
+    }
 
-    private:
-
-    Shader _shader;
-    Uniform _view, _projection;
-    VertexAttributes _attributes;
-    VertexBuffer _buffer;
-    Font _font;
+    void inflate(const glm::vec<N, T, Q>& vec) {
+        min -= vec;
+        max += vec;
+    }
 };
 
-#endif //NIHILO_RENDERER_HPP
+typedef Box<2, float, glm::defaultp> Box2;
+
+#endif //NIHILO_BOX_HPP
