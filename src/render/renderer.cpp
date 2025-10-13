@@ -22,6 +22,7 @@
 
 #include "renderer.hpp"
 
+#include <format>
 #include <iostream>
 
 #include "glad.h"
@@ -142,14 +143,18 @@ void Renderer::render(const ControlSnapshot& control, const SimulationSnapshot& 
 
     glDepthMask(GL_FALSE);
 
-    const std::string text = "Lorem ipsum dolor sit amet";
-    const glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(0.05, 0.05 * aspect, 0));
-    const glm::mat4 transformation = glm::translate(scale, glm::vec3(0));
+    const glm::vec3 scale(0.02, 0.02 * aspect, 0);
 
-    Box2 box = _font.setText(text);
-    box.inflate(glm::vec2(0.5));
-    _rectangle.setBox(box);
+    if (control.debug) {
+        const glm::vec3 pos = control.view[3];
 
-    _rectangle.render(transformation);
-    _font.render(transformation);
+        Box2 box = _font.setText(std::format("FOV: {:.2f}\nPos: {:.2f}, {:.2f}, {:.2f}\nSpeed: {:.2f}", control.fov, pos.x, pos.y, pos.z, control.speed));
+        box.inflate(glm::vec2(0.5));
+        _rectangle.setBox(box);
+
+        // align top left
+        const glm::mat4 transformation = glm::translate(glm::scale(glm::translate(glm::mat4(1), glm::vec3(-1, 1, 0)), scale), glm::vec3(-box.min.x, -box.max.y, 0));
+        _rectangle.render(transformation);
+        _font.render(transformation);
+    }
 }

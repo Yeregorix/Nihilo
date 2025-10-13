@@ -31,11 +31,14 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/norm.hpp"
 
-Controller::Controller(Camera &camera) : _camera(camera), _mouseDragging(false), _previousMousePosition(0) {
+Controller::Controller() : _mouseDragging(false), _previousMousePosition(0) {
 }
 
 void Controller::keyPressed(const int key, const char ch) {
     switch (key) {
+        case GLFW_KEY_F3:
+            _debug = !_debug;
+            break;
         case GLFW_KEY_KP_1:
             _camera.resetFOV();
             break;
@@ -68,6 +71,9 @@ void Controller::keyPressed(const int key, const char ch) {
             break;
         default:
             switch (ch) {
+                case 'h':
+                    _help = !_help;
+                    break;
                 case 'c':
                     _right = true;
                     break;
@@ -150,7 +156,7 @@ void Controller::mouseDragged(const glm::vec2 pos) {
     _camera.yaw(delta.x * -0.005f * getZoomFactor());
 }
 
-void Controller::scrolled(const double value) const {
+void Controller::scrolled(const double value) {
     _camera.roll(static_cast<float>(value) * -0.05f);
 }
 
@@ -201,9 +207,17 @@ void Controller::update() {
     }
 
     if (const float l = glm::length2(delta); l > glm::epsilon<float>()) {
-        const float f = 0.4f * getZoomFactor() * _speed;
+        const float f = 2.0f * getZoomFactor() * _speed;
         _camera.move(delta * f);
     }
+}
+
+void Controller::snapshot(ControlSnapshot& snapshot) const {
+    snapshot.fov = _camera.getFOV();
+    snapshot.view = _camera.getView();
+    snapshot.debug = _debug;
+    snapshot.help = _help;
+    snapshot.speed = _speed;
 }
 
 float Controller::getZoomFactor() const {

@@ -25,23 +25,29 @@
 #include <thread>
 
 Manager::Manager() :
-_animator(*this),
-_controlLoop([this] { _animator.updateControls(); }),
-_renderLoop([this] { _animator.updateRender(); }),
-_simulationLoop([this] {
-    _simulator.update();
-    _animator.simulationSnapshot = _simulator.snapshot();
-}) {
+_window(_controller),
+_controlLoop([this] { updateControls(); }),
+_simulationLoop([this] { updateSimulation(); }),
+_renderLoop([this] { updateRender(); }),
+_controlSnapshot(),
+_simulationSnapshot() {
+    _window.center();
+    Window::clearContext(); // we will transfer gl context to the render thread
+
     _controlLoop.setTargetFrequency(60);
     _renderLoop.setTargetFrequency(60);
     _simulationLoop.setTargetFrequency(30);
 }
 
+Manager::~Manager() {
+    _window.setContext(); // take back the gl context from the render thread
+}
+
 void Manager::run() {
     std::thread renderThread([this] {
-        _animator.beforeRender();
+        _window.setContext();
         _renderLoop.run();
-        Animator::afterRender();
+        Window::clearContext();
     });
     std::thread simulationThread([this] {
         _simulationLoop.run();
@@ -57,4 +63,45 @@ void Manager::stop() {
     _controlLoop.stop();
     _renderLoop.stop();
     _simulationLoop.stop();
+}
+
+void Manager::updateControls() {
+    glfwPollEvents();
+
+    _controller.update();
+
+    const auto snapshot = std::make_shared<ControlSnapshot>();
+    _controller.snapshot(*snapshot);
+    _window.getSize(snapshot->width, snapshot->height);
+    _controlSnapshot = snapshot;
+
+    if (_window.shouldClose()) {
+        stop();
+    }
+}
+
+void Manager::updateSimulation() {
+    _simulator.update();
+
+    const auto snapshot = std::make_shared<SimulationSnapshot>();
+    _simulator.snapshot(*snapshot);
+    _simulationSnapshot = snapshot;
+}
+
+void Manager::updateRender() {
+    const std::shared_ptr<SimulationSnapshot> simulationSnapshot = _simulationSnapshot;
+    if (simulationSnapshot == nullptr) {
+        return;
+    }
+
+    const std::shared_ptr<ControlSnapshot> controlSnapshot = _controlSnapshot;
+    if (controlSnapshot == nullptr) {
+        return;
+    }
+
+    const bool changed = simulationSnapshot.get() != _lastSimulationSnapshot.lock().get();
+    _lastSimulationSnapshot = simulationSnapshot;
+    _renderer.render(*controlSnapshot, *simulationSnapshot, changed);
+
+    _window.update();
 }

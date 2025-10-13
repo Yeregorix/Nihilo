@@ -37,7 +37,7 @@ class Simulator {
 
     void update();
 
-    std::shared_ptr<SimulationSnapshot> snapshot() const;
+    void snapshot(SimulationSnapshot& snapshot) const;
 
     private:
 

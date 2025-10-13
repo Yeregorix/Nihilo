@@ -23,14 +23,13 @@
 #ifndef NIHILO_CONTROLLER_HPP
 #define NIHILO_CONTROLLER_HPP
 
-#include <optional>
-
 #include "camera.hpp"
+#include "control.hpp"
 
 class Controller {
     public:
 
-    explicit Controller(Camera& camera);
+    Controller();
 
     void keyPressed(int key, char ch);
 
@@ -40,17 +39,20 @@ class Controller {
 
     void mouseDragged(glm::vec2 pos);
 
-    void scrolled(double value) const;
+    void scrolled(double value);
 
     void update();
+
+    void snapshot(ControlSnapshot& snapshot) const;
 
     private:
 
     [[nodiscard]] float getZoomFactor() const;
 
-    Camera& _camera;
+    Camera _camera;
+    bool _debug{}, _help{true};
     bool _zoomIn{}, _zoomOut{}, _left{}, _right{}, _forward{}, _backward{}, _up{}, _down{}, _speedUp{}, _slowDown{};
-    float _speed = 1;
+    float _speed{1};
     bool _mouseDragging;
     glm::vec2 _previousMousePosition;
 };

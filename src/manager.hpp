@@ -24,7 +24,9 @@
 #define NIHILO_MANAGER_HPP
 
 #include "loop.hpp"
-#include "animator.hpp"
+#include "control/controller.hpp"
+#include "control/window.hpp"
+#include "render/renderer.hpp"
 #include "simulation/simulator.hpp"
 
 class Manager {
@@ -32,15 +34,30 @@ class Manager {
 
     Manager();
 
+    ~Manager();
+
     void run();
 
     void stop();
 
     private:
 
-    Animator _animator;
+    void updateControls();
+
+    void updateSimulation();
+
+    void updateRender();
+
+    Controller _controller;
+    Window _window;
+    Renderer _renderer;
     Simulator _simulator;
-    Loop _controlLoop, _renderLoop, _simulationLoop;
+
+    Loop _controlLoop, _simulationLoop, _renderLoop;
+
+    std::atomic<std::shared_ptr<ControlSnapshot>> _controlSnapshot;
+    std::atomic<std::shared_ptr<SimulationSnapshot>> _simulationSnapshot;
+    std::weak_ptr<SimulationSnapshot> _lastSimulationSnapshot;
 };
 
 

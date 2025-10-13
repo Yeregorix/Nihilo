@@ -72,10 +72,8 @@ void Simulator::update() {
     }
 }
 
-std::shared_ptr<SimulationSnapshot> Simulator::snapshot() const {
-    const auto snapshot = std::make_shared<SimulationSnapshot>();
-
-    std::vector<ParticleSnapshot>& particles = snapshot->particles;
+void Simulator::snapshot(SimulationSnapshot& snapshot) const {
+    std::vector<ParticleSnapshot>& particles = snapshot.particles;
     particles.reserve(_simulation.particles.size());
 
     const auto index = _simulation.age % 2;
@@ -83,6 +81,4 @@ std::shared_ptr<SimulationSnapshot> Simulator::snapshot() const {
         ParticleSnapshot p(particle.state[index].position, particle.radius);
         particles.push_back(p);
     }
-
-    return snapshot;
 }

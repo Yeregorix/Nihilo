@@ -1,8 +1,6 @@
 add_executable(Nihilo main.cpp
         loop.cpp
         loop.hpp
-        animator.cpp
-        animator.hpp
         manager.cpp
         manager.hpp
         box.hpp

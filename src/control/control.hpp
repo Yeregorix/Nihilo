@@ -32,6 +32,9 @@ struct ControlSnapshot {
     int width, height;
     float fov;
     glm::mat4 view;
+
+    bool debug, help;
+    float speed;
 };
 
 #endif //NIHILO_CONTROL_HPP
