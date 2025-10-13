@@ -44,9 +44,11 @@ class Font {
 
     ~Font();
 
-    [[nodiscard]] Box2 box(const std::string& text) const;
+    Box2 setText(const std::string& text);
 
-    void render(const std::string& text, const glm::mat4& transformation, const glm::vec3& color) const;
+    void setColor(const glm::vec3& color) const;
+
+    void render(const glm::mat4& transformation) const;
 
     private:
 
@@ -56,6 +58,7 @@ class Font {
     VertexBuffer _buffer;
     unsigned int _textureId{};
     Character _chars[128]{};
+    unsigned int _glyphs;
 };
 
 

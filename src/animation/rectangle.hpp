@@ -20,31 +20,32 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_RENDERER_HPP
-#define NIHILO_RENDERER_HPP
+#ifndef NIHILO_RECTANGLE_HPP
+#define NIHILO_RECTANGLE_HPP
 
-#include "control.hpp"
-#include "font.hpp"
-#include "rectangle.hpp"
 #include "shader.hpp"
 #include "vertex.hpp"
-#include "../simulation/simulation.hpp"
+#include "../box.hpp"
 
-class Renderer {
+class Rectangle {
+
     public:
 
-    Renderer();
+    Rectangle();
 
-    void render(const ControlSnapshot& control, const SimulationSnapshot& simulation, bool simulationChanged);
+    void setBox(const Box2& box) const;
+
+    void setColor(const glm::vec4& color) const;
+
+    void render(const glm::mat4& transformation) const;
 
     private:
 
     Shader _shader;
-    Uniform _view, _projection;
+    Uniform _transformation, _color;
     VertexAttributes _attributes;
     VertexBuffer _buffer;
-    Rectangle _rectangle;
-    Font _font;
 };
 
-#endif //NIHILO_RENDERER_HPP
+
+#endif //NIHILO_RECTANGLE_HPP

@@ -86,17 +86,17 @@ const std::string textFragment = R"(
 flat in int character;
 in vec2 texturePos;
 
-out vec4 color;
+out vec4 outColor;
 
 uniform sampler2DArray textureArray;
-uniform vec3 textColor;
+uniform vec3 color;
 
 void main() {
     float a = texture(textureArray, vec3(texturePos.x, 1 - texturePos.y, character)).r;
     if (a == 0) {
         discard;
     }
-    color = vec4(textColor, a);
+    outColor = vec4(color, a);
 }
 )";
 
@@ -109,7 +109,8 @@ constexpr unsigned int glyphSize = 256;
 
 Font::Font(const std::string& fontPath) :
 _shader(textVertex, textGeometry, textFragment),
-_transformation(_shader.uniform("transformation")), _color(_shader.uniform("textColor"))
+_transformation(_shader.uniform("transformation")), _color(_shader.uniform("color")),
+_glyphs()
 {
     FT_Library ft;
     if (FT_Init_FreeType(&ft)) {
@@ -147,7 +148,7 @@ _transformation(_shader.uniform("transformation")), _color(_shader.uniform("text
         _chars[c] = {
             glm::vec2(glyph->bitmap.width, glyph->bitmap.rows) / static_cast<float>(glyphSize),
             glm::vec2(glyph->bitmap_left, glyph->bitmap_top) / static_cast<float>(glyphSize),
-            static_cast<float>(glyph->advance.x) / static_cast<float>(glyphSize)
+            static_cast<float>(glyph->advance.x) / static_cast<float>(glyphSize * 64)
         };
     }
 
@@ -168,10 +169,12 @@ Font::~Font() {
     glDeleteTextures(1, &_textureId);
 }
 
-Box2 Font::box(const std::string &text) const {
+Box2 Font::setText(const std::string& text) {
     float x = 0, y = 0;
-
     Box2 textBox;
+
+    std::vector<Glyph> glyphs;
+    glyphs.reserve(text.length());
 
     for (unsigned char c : text) {
         if (c >= 128) {
@@ -192,48 +195,34 @@ Box2 Font::box(const std::string &text) const {
             y -= 1.3f;
             x = 0;
         } else {
-            x += advance / 64.0f;
-        }
-    }
-
-    return textBox;
-}
-
-void Font::render(const std::string& text, const glm::mat4& transformation, const glm::vec3& color) const {
-    float x = 0, y = 0;
-    std::vector<Glyph> glyphs;
-    glyphs.reserve(text.length());
-
-    for (unsigned char c : text) {
-        if (c >= 128) {
-            c = '?';
-        }
-
-        const Character& ch = _chars[c];
-
-        if (c == '\n') {
-            y -= 1.3f;
-            x = 0;
-        } else {
             if (c != ' ') {
-                glyphs.push_back({glm::vec2(x + ch.bearing.x, y - (1.0f - ch.bearing.y)), c});
+                glyphs.push_back({glm::vec2(charBox.min.x, charBox.max.y - 1.0f), c});
             }
-            x += ch.advance / 64.0f;
+            x += advance;
         }
     }
-
-    _shader.use();
-    _transformation.setMat4(transformation);
-    _color.setVec3(color);
 
     _buffer.use();
     VertexBuffer::setData(glyphs, GL_DYNAMIC_DRAW);
     VertexBuffer::clearUse();
 
+    _glyphs = glyphs.size();
+    return textBox;
+}
+
+void Font::setColor(const glm::vec3 &color) const {
+    _shader.use();
+    _color.setVec3(color);
+}
+
+void Font::render(const glm::mat4& transformation) const {
+    _shader.use();
+    _transformation.setMat4(transformation);
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, _textureId);
 
     _attributes.use();
-    VertexAttributes::draw(GL_POINTS, glyphs.size());
+    VertexAttributes::draw(GL_POINTS, _glyphs);
     VertexAttributes::clearUse();
 }

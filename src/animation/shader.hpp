@@ -41,6 +41,8 @@ class Uniform {
 
     void setVec3(const glm::vec3& vec) const;
 
+    void setVec4(const glm::vec4& vec) const;
+
     void setMat4(const glm::mat4& mat) const;
 
     private:

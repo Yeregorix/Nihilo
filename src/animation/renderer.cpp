@@ -112,9 +112,12 @@ _font("SpaceMono-Regular.ttf") {
     VertexAttributes::setFloat(1, 1, sizeof(ParticleSnapshot), offsetof(ParticleSnapshot, radius));
     VertexBuffer::clearUse();
     VertexAttributes::clearUse();
+
+    _rectangle.setColor(glm::vec4(0.2, 0.2, 0.2, 0.9));
+    _font.setColor(glm::vec3(0.5, 0.8, 0.2));
 }
 
-void Renderer::render(const ControlSnapshot& control, const SimulationSnapshot& simulation, const bool simulationChanged) const {
+void Renderer::render(const ControlSnapshot& control, const SimulationSnapshot& simulation, const bool simulationChanged) {
     if (simulationChanged) {
         _buffer.use();
         VertexBuffer::setData(simulation.particles, GL_DYNAMIC_DRAW);
@@ -123,6 +126,7 @@ void Renderer::render(const ControlSnapshot& control, const SimulationSnapshot& 
 
     glViewport(0, 0, control.width, control.height);
     glClearColor(0, 0, 0, 1.0f);
+    glDepthMask(GL_TRUE);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     const float aspect = static_cast<float>(control.width) / static_cast<float>(control.height);
@@ -136,15 +140,16 @@ void Renderer::render(const ControlSnapshot& control, const SimulationSnapshot& 
     VertexAttributes::draw(GL_POINTS, simulation.particles.size());
     VertexAttributes::clearUse();
 
-    const std::string text = "Lorem ipsum dolor sit amet";
+    glDepthMask(GL_FALSE);
 
+    const std::string text = "Lorem ipsum dolor sit amet";
     const glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(0.05, 0.05 * aspect, 0));
     const glm::mat4 transformation = glm::translate(scale, glm::vec3(0));
 
-    Box2 box = _font.box(text);
-    box.inflate(glm::vec2(0.05));
-    // TODO background rectangle
+    Box2 box = _font.setText(text);
+    box.inflate(glm::vec2(0.5));
+    _rectangle.setBox(box);
 
-    constexpr glm::vec3 color(0.5, 0.8, 0.2);
-    _font.render(text, transformation, color);
+    _rectangle.render(transformation);
+    _font.render(transformation);
 }

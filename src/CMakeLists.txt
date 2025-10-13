@@ -29,7 +29,9 @@ add_executable(Nihilo main.cpp
         animation/font.hpp
         box.hpp
         animation/vertex.cpp
-        animation/vertex.hpp)
+        animation/vertex.hpp
+        animation/rectangle.cpp
+        animation/rectangle.hpp)
 
 find_package(OpenGL REQUIRED)
 
