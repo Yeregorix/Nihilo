@@ -4,6 +4,8 @@ add_executable(Nihilo main.cpp
         manager.cpp
         manager.hpp
         box.hpp
+        timing.cpp
+        timing.hpp
         control/window.cpp
         control/window.hpp
         control/camera.cpp

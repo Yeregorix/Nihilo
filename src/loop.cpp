@@ -28,8 +28,6 @@
 #include <stdexcept>
 #include <thread>
 
-#define NANOS_PER_SECOND 1E9
-
 Loop::Loop(const std::function<void()>& function) : _function(function) {
 }
 
@@ -49,7 +47,7 @@ void Loop::run() {
 
         auto t2 = std::chrono::steady_clock::now();
 
-        const unsigned int duration = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t).count();
+        const unsigned int duration = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t).count();
         _currentPeriod = duration;
         if (const unsigned int target = _targetPeriod; duration < target) {
             std::this_thread::sleep_for(std::chrono::nanoseconds(target - duration));
@@ -71,7 +69,7 @@ void Loop::setTargetFrequency(const double frequency) {
     if (frequency <= 0) {
         throw std::domain_error("Frequency must be greater than zero");
     }
-    setTargetPeriod(NANOS_PER_SECOND / frequency);
+    setTargetPeriod(ONE_SECOND / frequency);
 }
 
 void Loop::setTargetPeriod(const unsigned int period) {
@@ -79,17 +77,14 @@ void Loop::setTargetPeriod(const unsigned int period) {
 }
 
 double Loop::getTargetFrequency() const {
-    return NANOS_PER_SECOND / getTargetPeriod();
+    return ONE_SECOND / _targetPeriod;
 }
 
 unsigned int Loop::getTargetPeriod() const {
     return _targetPeriod;
 }
 
-double Loop::getCurrentFrequency() const {
-    return NANOS_PER_SECOND / getCurrentPeriod();
-}
-
-unsigned int Loop::getCurrentPeriod() const {
-    return std::max<unsigned int>(_currentPeriod, _targetPeriod);
+void Loop::getTiming(LoopTiming& timing) const {
+    timing.currentPeriod = _currentPeriod;
+    timing.targetPeriod = _targetPeriod;
 }

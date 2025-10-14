@@ -36,7 +36,7 @@ _simulationSnapshot() {
 
     _controlLoop.setTargetFrequency(60);
     _renderLoop.setTargetFrequency(60);
-    _simulationLoop.setTargetFrequency(30);
+    _simulationLoop.setTargetFrequency(60);
 }
 
 Manager::~Manager() {
@@ -99,9 +99,15 @@ void Manager::updateRender() {
         return;
     }
 
+    ManagerTiming timing;
+    if (controlSnapshot->debug) {
+        _simulationLoop.getTiming(timing.simulation);
+        _renderLoop.getTiming(timing.render);
+    }
+
     const bool changed = simulationSnapshot.get() != _lastSimulationSnapshot.lock().get();
     _lastSimulationSnapshot = simulationSnapshot;
-    _renderer.render(*controlSnapshot, *simulationSnapshot, changed);
+    _renderer.render(*controlSnapshot, *simulationSnapshot, changed, timing);
 
     _window.update();
 }

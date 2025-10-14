@@ -26,7 +26,6 @@
 #include <iostream>
 
 #include "glad.h"
-#include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
@@ -99,6 +98,8 @@ void main() {
 }
 )";
 
+constexpr float ONE_MILLISECOND = ONE_SECOND / 1000;
+
 Renderer::Renderer() :
 _shader(particleVertex, particleGeometry, particleFragment),
 _view(_shader.uniform("view")), _projection(_shader.uniform("projection")),
@@ -120,7 +121,7 @@ _font("SpaceMono-Regular.ttf") {
     _font.setColor(glm::vec3(0.5, 0.8, 0.2));
 }
 
-void Renderer::render(const ControlSnapshot& control, const SimulationSnapshot& simulation, const bool simulationChanged) {
+void Renderer::render(const ControlSnapshot& control, const SimulationSnapshot& simulation, const bool simulationChanged, const ManagerTiming& timing) {
     if (simulationChanged) {
         _buffer.use();
         VertexBuffer::setData(simulation.particles, GL_DYNAMIC_DRAW);
@@ -150,7 +151,11 @@ void Renderer::render(const ControlSnapshot& control, const SimulationSnapshot& 
     if (control.debug) {
         const glm::vec3 pos = control.view[3];
 
-        Box2 box = _font.setText(std::format("FOV: {:.2f}\nPos: {:.2f}, {:.2f}, {:.2f}\nSpeed: {:.2f}", control.fov, pos.x, pos.y, pos.z, control.speed));
+        Box2 box = _font.setText(std::format(
+            "Simulation:\n{:.2f} / {:.2f} ms\n{:.2f} Hz\nRender:\n{:.2f} / {:.2f} ms\n{:.2f} Hz\n\nFOV: {:.2f}\nPos: {:.2f}, {:.2f}, {:.2f}\nSpeed: {:.2f}",
+            static_cast<float>(timing.simulation.currentPeriod) / ONE_MILLISECOND, static_cast<float>(timing.simulation.targetPeriod) / ONE_MILLISECOND, timing.simulation.getFrequency(),
+            static_cast<float>(timing.render.currentPeriod) / ONE_MILLISECOND, static_cast<float>(timing.render.targetPeriod) / ONE_MILLISECOND, timing.render.getFrequency(),
+            control.fov, pos.x, pos.y, pos.z, control.speed));
         box.inflate(glm::vec2(0.5));
         _rectangle.setBox(box);
 

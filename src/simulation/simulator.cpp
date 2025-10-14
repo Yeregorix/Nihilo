@@ -30,7 +30,7 @@
 
 Simulator::Simulator() : _reset(true) {
     std::vector<Particle>& particles = _simulation.particles;
-    constexpr std::size_t count = 100;
+    constexpr std::size_t count = 200;
     particles.reserve(count);
 
     Particle particle;

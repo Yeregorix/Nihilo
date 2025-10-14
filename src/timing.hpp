@@ -20,40 +20,23 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_LOOP_HPP
-#define NIHILO_LOOP_HPP
+#ifndef NIHILO_TIMING_HPP
+#define NIHILO_TIMING_HPP
 
-#include <atomic>
-#include <functional>
+#define ONE_SECOND 1E9 // nanos
 
-#include "timing.hpp"
+class LoopTiming {
+public:
 
-class Loop {
-    public:
+    unsigned int currentPeriod{}, targetPeriod{};
 
-    explicit Loop(const std::function<void()>& function);
+    [[nodiscard]] unsigned int getPeriod() const;
 
-    void run();
-
-    void stop();
-
-    [[nodiscard]] bool isRunning() const;
-
-    void setTargetFrequency(double frequency);
-
-    void setTargetPeriod(unsigned int period);
-
-    [[nodiscard]] double getTargetFrequency() const;
-
-    [[nodiscard]] unsigned int getTargetPeriod() const;
-
-    void getTiming(LoopTiming& timing) const;
-
-    private:
-
-    std::function<void()> _function;
-    std::atomic<unsigned int> _targetPeriod = 0, _currentPeriod = 0; // nano
-    std::atomic<bool> _running = false;
+    [[nodiscard]] double getFrequency() const;
 };
 
-#endif //NIHILO_LOOP_HPP
+struct ManagerTiming {
+    LoopTiming simulation, render;
+};
+
+#endif //NIHILO_TIMING_HPP

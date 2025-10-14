@@ -20,40 +20,14 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_LOOP_HPP
-#define NIHILO_LOOP_HPP
-
-#include <atomic>
-#include <functional>
-
 #include "timing.hpp"
 
-class Loop {
-    public:
+#include <algorithm>
 
-    explicit Loop(const std::function<void()>& function);
+unsigned int LoopTiming::getPeriod() const {
+    return std::max(currentPeriod, targetPeriod);
+}
 
-    void run();
-
-    void stop();
-
-    [[nodiscard]] bool isRunning() const;
-
-    void setTargetFrequency(double frequency);
-
-    void setTargetPeriod(unsigned int period);
-
-    [[nodiscard]] double getTargetFrequency() const;
-
-    [[nodiscard]] unsigned int getTargetPeriod() const;
-
-    void getTiming(LoopTiming& timing) const;
-
-    private:
-
-    std::function<void()> _function;
-    std::atomic<unsigned int> _targetPeriod = 0, _currentPeriod = 0; // nano
-    std::atomic<bool> _running = false;
-};
-
-#endif //NIHILO_LOOP_HPP
+double LoopTiming::getFrequency() const {
+    return ONE_SECOND / getPeriod();
+}

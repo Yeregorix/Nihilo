@@ -23,6 +23,7 @@
 #ifndef NIHILO_RENDERER_HPP
 #define NIHILO_RENDERER_HPP
 
+#include "../timing.hpp"
 #include "../control/control.hpp"
 #include "../simulation/simulation.hpp"
 #include "font.hpp"
@@ -35,7 +36,7 @@ class Renderer {
 
     Renderer();
 
-    void render(const ControlSnapshot& control, const SimulationSnapshot& simulation, bool simulationChanged);
+    void render(const ControlSnapshot& control, const SimulationSnapshot& simulation, bool simulationChanged, const ManagerTiming& timing);
 
     private:
 
