@@ -102,8 +102,7 @@ constexpr float ONE_MILLISECOND = ONE_SECOND / 1000;
 
 Renderer::Renderer() :
 _shader(particleVertex, particleGeometry, particleFragment),
-_view(_shader.uniform("view")), _projection(_shader.uniform("projection")),
-_font("SpaceMono-Regular.ttf") {
+_view(_shader.uniform("view")), _projection(_shader.uniform("projection")) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

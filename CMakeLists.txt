@@ -7,5 +7,6 @@ set(CMAKE_CXX_STANDARD 23)
 # -mwindows: hide console
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++ -static-libgcc -mwindows -fno-rtti")
 
+add_subdirectory(assets)
 add_subdirectory(lib)
 add_subdirectory(src)

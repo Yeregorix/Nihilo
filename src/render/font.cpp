@@ -31,6 +31,8 @@
 #include "glad.h"
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "assets.h"
+
 // language=glsl
 const std::string textVertex = R"(
 #version 330 core
@@ -107,7 +109,7 @@ struct Glyph {
 
 constexpr unsigned int glyphSize = 256;
 
-Font::Font(const std::string& fontPath) :
+Font::Font() :
 _shader(textVertex, textGeometry, textFragment),
 _transformation(_shader.uniform("transformation")), _color(_shader.uniform("color")),
 _glyphs()
@@ -117,8 +119,18 @@ _glyphs()
         throw std::runtime_error("Failed to initialize FreeType");
     }
 
+    const FT_Open_Args args{
+        FT_OPEN_MEMORY,
+        ChivoMono_Regular_ttf,
+        static_cast<FT_Long>(ChivoMono_Regular_ttf_size),
+        nullptr,
+        nullptr,
+        nullptr,
+        0
+    };
+
     FT_Face face;
-    if (FT_New_Face(ft, fontPath.c_str(), 0, &face)) {
+    if (FT_Open_Face(ft, &args, 0, &face)) {
         throw std::runtime_error("Failed to load font");
     }
 

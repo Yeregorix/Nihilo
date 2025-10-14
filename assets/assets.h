@@ -20,46 +20,10 @@
  * SOFTWARE.
  */
 
-#ifndef NIHILO_FONT_HPP
-#define NIHILO_FONT_HPP
+#ifndef NIHILO_ASSETS_H
+#define NIHILO_ASSETS_H
 
-#include <string>
+extern const unsigned char ChivoMono_Regular_ttf[];
+extern const unsigned ChivoMono_Regular_ttf_size;
 
-#include "shader.hpp"
-#include "vertex.hpp"
-#include "glm/glm.hpp"
-#include "../box.hpp"
-
-struct Character {
-    glm::vec2 size;
-    glm::vec2 bearing;
-    float advance;
-};
-
-class Font {
-
-    public:
-
-    Font();
-
-    ~Font();
-
-    Box2 setText(const std::string& text);
-
-    void setColor(const glm::vec3& color) const;
-
-    void render(const glm::mat4& transformation) const;
-
-    private:
-
-    Shader _shader;
-    Uniform _transformation, _color;
-    VertexAttributes _attributes;
-    VertexBuffer _buffer;
-    unsigned int _textureId{};
-    Character _chars[128]{};
-    unsigned int _glyphs;
-};
-
-
-#endif //NIHILO_FONT_HPP
+#endif //NIHILO_ASSETS_H

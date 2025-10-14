@@ -36,4 +36,4 @@ add_executable(Nihilo main.cpp
 
 find_package(OpenGL REQUIRED)
 
-target_link_libraries(Nihilo PRIVATE glfw OpenGL::GL glad glm::glm freetype atomic)
+target_link_libraries(Nihilo PRIVATE glfw OpenGL::GL glad glm::glm freetype atomic assets)
