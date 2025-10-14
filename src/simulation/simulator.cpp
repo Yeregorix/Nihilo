@@ -30,12 +30,12 @@
 
 Simulator::Simulator() : _reset(true) {
     std::vector<Particle>& particles = _simulation.particles;
-    constexpr std::size_t count = 200;
+    constexpr std::size_t count = 500;
     particles.reserve(count);
 
     Particle particle;
     particle.radius = 1.0f;
-    particle.mass = 1000000000.0f;
+    particle.mass = 100000000.0f;
 
     for (unsigned int i = 0; i < count; i++) {
         particles.push_back(particle);

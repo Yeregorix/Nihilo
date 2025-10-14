@@ -152,7 +152,7 @@ void Renderer::render(const ControlSnapshot& control, const SimulationSnapshot& 
         const glm::vec3 pos = control.view[3];
 
         Box2 box = _font.setText(std::format(
-            "Simulation:\n{:.2f} / {:.2f} ms\n{:.2f} Hz\nRender:\n{:.2f} / {:.2f} ms\n{:.2f} Hz\n\nFOV: {:.2f}\nPos: {:.2f}, {:.2f}, {:.2f}\nSpeed: {:.2f}",
+            "Simulation:\n{:05.2f} / {:05.2f} ms\n{:05.2f} Hz\nRender:\n{:05.2f} / {:05.2f} ms\n{:05.2f} Hz\n\nFOV: {:.2f}\nPos: {:.2f}, {:.2f}, {:.2f}\nSpeed: {:.2f}",
             static_cast<float>(timing.simulation.currentPeriod) / ONE_MILLISECOND, static_cast<float>(timing.simulation.targetPeriod) / ONE_MILLISECOND, timing.simulation.getFrequency(),
             static_cast<float>(timing.render.currentPeriod) / ONE_MILLISECOND, static_cast<float>(timing.render.targetPeriod) / ONE_MILLISECOND, timing.render.getFrequency(),
             control.fov, pos.x, pos.y, pos.z, control.speed));
