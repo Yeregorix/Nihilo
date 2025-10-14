@@ -36,7 +36,7 @@ void Loop::run() {
         throw std::runtime_error("Loop already running");
     }
 
-    auto t = std::chrono::steady_clock::now();
+    auto startTime = std::chrono::steady_clock::now();
 
     while (_running) {
         try {
@@ -45,15 +45,15 @@ void Loop::run() {
             std::cout << "Loop exception: " << e.what() << std::endl;
         }
 
-        auto t2 = std::chrono::steady_clock::now();
+        auto endTime = std::chrono::steady_clock::now();
+        _currentPeriod = std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime).count();
 
-        const unsigned int duration = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t).count();
-        _currentPeriod = duration;
-        if (const unsigned int target = _targetPeriod; duration < target) {
-            std::this_thread::sleep_for(std::chrono::nanoseconds(target - duration));
+        if (const auto targetEndTime = startTime + std::chrono::nanoseconds(_targetPeriod); endTime < targetEndTime) {
+            std::this_thread::sleep_until(targetEndTime);
+            startTime = targetEndTime;
+        } else {
+            startTime = endTime;
         }
-
-        t = t2;
     }
 }
 
