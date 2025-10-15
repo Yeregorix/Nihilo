@@ -73,7 +73,9 @@ void Camera::roll(const float angle) {
     _up = glm::normalize(glm::rotate(_up, angle, _forward));
 }
 
-glm::mat4 Camera::getView() const {
-    return glm::lookAt(position, position + _forward, _up);
+void Camera::snapshot(CameraSnapshot& snapshot) const {
+    snapshot.fov = _fov;
+    snapshot.position = position;
+    snapshot.forward = _forward;
+    snapshot.up = _up;
 }
-

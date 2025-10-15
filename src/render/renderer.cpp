@@ -134,9 +134,10 @@ void Renderer::render(const ControlSnapshot& control, const SimulationSnapshot& 
 
     const float aspect = static_cast<float>(control.width) / static_cast<float>(control.height);
     const auto projection = glm::perspective(glm::radians(control.fov), aspect, 0.01f, 10000.0f);
+    const auto view = glm::lookAt(control.position, control.position + control.forward, control.up);
 
     _shader.use();
-    _view.setMat4(control.view);
+    _view.setMat4(view);
     _projection.setMat4(projection);
 
     _attributes.use();
@@ -148,13 +149,11 @@ void Renderer::render(const ControlSnapshot& control, const SimulationSnapshot& 
     const glm::vec3 scale(0.02, 0.02 * aspect, 0);
 
     if (control.debug) {
-        const glm::vec3 pos = control.view[3];
-
         Box2 box = _font.setText(std::format(
             "Simulation:\n{:05.2f} / {:05.2f} ms\n{:05.2f} Hz\nRender:\n{:05.2f} / {:05.2f} ms\n{:05.2f} Hz\n\nFOV: {:.2f}\nPos: {:.2f}, {:.2f}, {:.2f}\nSpeed: {:.2f}",
             static_cast<float>(timing.simulation.currentPeriod) / ONE_MILLISECOND, static_cast<float>(timing.simulation.targetPeriod) / ONE_MILLISECOND, timing.simulation.getFrequency(),
             static_cast<float>(timing.render.currentPeriod) / ONE_MILLISECOND, static_cast<float>(timing.render.targetPeriod) / ONE_MILLISECOND, timing.render.getFrequency(),
-            control.fov, pos.x, pos.y, pos.z, control.speed));
+            control.fov, control.position.x, control.position.y, control.position.z, control.speed));
         box.inflate(glm::vec2(0.5));
         _rectangle.setBox(box);
 

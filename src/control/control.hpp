@@ -25,14 +25,16 @@
 
 #include "glm/glm.hpp"
 
+struct CameraSnapshot {
+    float fov;
+    glm::vec3 position, forward, up;
+};
+
 /**
  * Shared data between control and render threads.
  */
-struct ControlSnapshot {
+struct ControlSnapshot : CameraSnapshot {
     int width, height;
-    float fov;
-    glm::mat4 view;
-
     bool debug, help;
     float speed;
 };

@@ -23,7 +23,7 @@
 #ifndef NIHILO_CAMERA_HPP
 #define NIHILO_CAMERA_HPP
 
-#include "glm/glm.hpp"
+#include "control.hpp"
 
 constexpr float MIN_FOV = 1, MAX_FOV = 80, DEFAULT_FOV = 50;
 
@@ -52,7 +52,7 @@ class Camera {
 
     void roll(float angle);
 
-    [[nodiscard]] glm::mat4 getView() const;
+    void snapshot(CameraSnapshot& snapshot) const;
 
     private:
 

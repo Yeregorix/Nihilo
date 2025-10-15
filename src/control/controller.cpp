@@ -213,8 +213,7 @@ void Controller::update() {
 }
 
 void Controller::snapshot(ControlSnapshot& snapshot) const {
-    snapshot.fov = _camera.getFOV();
-    snapshot.view = _camera.getView();
+    _camera.snapshot(snapshot);
     snapshot.debug = _debug;
     snapshot.help = _help;
     snapshot.speed = _speed;
