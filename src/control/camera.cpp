@@ -25,9 +25,13 @@
 #include <algorithm>
 
 #define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/norm.hpp"
 #include "glm/gtx/rotate_vector.hpp"
 
-Camera::Camera() : position(0), _fov(DEFAULT_FOV), _left(-1, 0, 0), _up(0, 1, 0), _forward(0, 0, 1) {
+constexpr glm::vec3 DEFAULT_POSITION(-200, 0, 0);
+
+Camera::Camera() : _fov(DEFAULT_FOV), _position(DEFAULT_POSITION), _left(), _up(), _forward() {
+    resetOrientation();
 }
 
 float Camera::getFOV() const {
@@ -47,15 +51,24 @@ void Camera::zoom(const float delta) {
 }
 
 void Camera::move(const glm::vec3 delta) {
-    position.x += _left.x * delta.x + _up.x * delta.y + _forward.x * delta.z;
-    position.y += _left.y * delta.x + _up.y * delta.y + _forward.y * delta.z;
-    position.z += _left.z * delta.x + _up.z * delta.y + _forward.z * delta.z;
+    _position.x += _left.x * delta.x + _up.x * delta.y + _forward.x * delta.z;
+    _position.y += _left.y * delta.x + _up.y * delta.y + _forward.y * delta.z;
+    _position.z += _left.z * delta.x + _up.z * delta.y + _forward.z * delta.z;
+}
+
+void Camera::resetPosition() {
+    _position = DEFAULT_POSITION;
+}
+
+glm::vec3 normalizeOrDefault(const glm::vec3& value, const glm::vec3 defaultValue) {
+    const float l = glm::length2(value);
+    return l > glm::epsilon<float>() ? value * glm::inversesqrt(l) : defaultValue;
 }
 
 void Camera::resetOrientation() {
-    _left = glm::vec3(-1, 0, 0);
-    _up = glm::vec3(0, 1, 0);
-    _forward = glm::vec3(0, 0, 1);
+    _forward = normalizeOrDefault(-_position, glm::vec3(0, 0, 1)); // look at center
+    _left = normalizeOrDefault(glm::cross(glm::vec3(0, 1, 0), _forward), glm::vec3(1, 0, 0)); // align up
+    _up = glm::cross(_forward, _left);
 }
 
 void Camera::pitch(const float angle) {
@@ -75,7 +88,7 @@ void Camera::roll(const float angle) {
 
 void Camera::snapshot(CameraSnapshot& snapshot) const {
     snapshot.fov = _fov;
-    snapshot.position = position;
+    snapshot.position = _position;
     snapshot.forward = _forward;
     snapshot.up = _up;
 }

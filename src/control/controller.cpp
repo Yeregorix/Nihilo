@@ -43,7 +43,7 @@ void Controller::keyPressed(const int key, const char ch) {
             _camera.resetFOV();
             break;
         case GLFW_KEY_KP_2:
-            _camera.position = glm::vec3(0);
+            _camera.resetPosition();
             break;
         case GLFW_KEY_KP_3:
             _camera.resetOrientation();
@@ -152,7 +152,7 @@ void Controller::mouseDragged(const glm::vec2 pos) {
         return;
     }
 
-    _camera.pitch(delta.y * -0.005f * getZoomFactor());
+    _camera.pitch(delta.y * 0.005f * getZoomFactor());
     _camera.yaw(delta.x * -0.005f * getZoomFactor());
 }
 
@@ -188,10 +188,10 @@ void Controller::update() {
 
     glm::vec3 delta(0, 0, 0);
     if (_right) {
-        delta.x++;
+        delta.x--;
     }
     if (_left) {
-        delta.x--;
+        delta.x++;
     }
     if (_forward) {
         delta.z++;

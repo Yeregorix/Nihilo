@@ -30,8 +30,6 @@ constexpr float MIN_FOV = 1, MAX_FOV = 80, DEFAULT_FOV = 50;
 class Camera {
     public:
 
-    glm::vec3 position;
-
     Camera();
 
     [[nodiscard]] float getFOV() const;
@@ -43,6 +41,8 @@ class Camera {
     void zoom(float delta);
 
     void move(glm::vec3 delta);
+
+    void resetPosition();
 
     void resetOrientation();
 
@@ -57,7 +57,7 @@ class Camera {
     private:
 
     float _fov;
-    glm::vec3 _left, _up, _forward;
+    glm::vec3 _position, _left, _up, _forward;
 };
 
 
