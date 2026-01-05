@@ -28,7 +28,7 @@
 constexpr size_t SOLAR_SYSTEM_SIZE = 9;
 
 inline float solarSystemRadius(const double original) {
-    return static_cast<float>(std::log10(original) - 6.2) * 0.1f;
+    return static_cast<float>(std::log10(original) - 6.1) * 0.1f;
 }
 
 // Mass and radius from https://ssd.jpl.nasa.gov/planets/phys_par.html

@@ -71,7 +71,7 @@ void Simulator::snapshot(SimulationSnapshot& snapshot) const {
 
     const auto index = _simulation.age % 2;
     for (const Particle& particle : _simulation.particles) {
-        ParticleSnapshot p(particle.state[index].position / POSITION_SCALE, particle.radius);
+        ParticleSnapshot p(particle.state[index].position / POSITION_SCALE, particle.radius, particle.color);
         particles.push_back(p);
     }
 }

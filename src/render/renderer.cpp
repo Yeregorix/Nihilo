@@ -36,12 +36,15 @@ const std::string particleVertex = R"(
 
 layout (location = 0) in vec3 position;
 layout (location = 1) in float radius;
+layout (location = 2) in vec3 color;
 
 flat out float geomRadius;
+flat out vec3 geomColor;
 
 void main() {
     gl_Position = vec4(position, 1);
     geomRadius = radius;
+    geomColor = color;
 }
 )";
 
@@ -53,8 +56,10 @@ layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;
 
 flat in float[] geomRadius;
+flat in vec3[] geomColor;
 
 flat out float radius2;
+flat out vec3 fragColor;
 out vec2 offset;
 
 uniform mat4 view;
@@ -64,6 +69,7 @@ void main() {
     vec4 pos = view * gl_in[0].gl_Position;
     float radius = geomRadius[0];
     radius2 = radius * radius;
+    fragColor = geomColor[0];
     offset = vec2(-radius, -radius);
     gl_Position = projection * (pos + vec4(offset, 0, 0));
     EmitVertex();
@@ -85,6 +91,7 @@ const std::string particleFragment = R"(
 #version 330 core
 
 flat in float radius2;
+flat in vec3 fragColor;
 in vec2 offset;
 
 out vec4 color;
@@ -94,7 +101,7 @@ void main() {
     if (offset2 > radius2) {
         discard;
     }
-    color = vec4(1, 1, 1, 1);
+    color = vec4(fragColor, 1);
 }
 )";
 
@@ -113,6 +120,7 @@ _view(_shader.uniform("view")), _projection(_shader.uniform("projection")) {
     _buffer.use();
     VertexAttributes::setFloat(0, 3, sizeof(ParticleSnapshot), offsetof(ParticleSnapshot, position));
     VertexAttributes::setFloat(1, 1, sizeof(ParticleSnapshot), offsetof(ParticleSnapshot, radius));
+    VertexAttributes::setFloat(2, 3, sizeof(ParticleSnapshot), offsetof(ParticleSnapshot, color));
     VertexBuffer::clearUse();
     VertexAttributes::clearUse();
 

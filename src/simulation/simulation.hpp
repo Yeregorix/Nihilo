@@ -31,6 +31,7 @@ constexpr double POSITION_SCALE = 149597870700.0; // Astronomical Unit
 struct ParticleSnapshot {
     glm::vec3 position;
     float radius;
+    glm::vec3 color;
 };
 
 /**
