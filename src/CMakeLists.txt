@@ -32,6 +32,7 @@ add_executable(Nihilo main.cpp
         simulation/force.hpp
         simulation/integration.cpp
         simulation/integration.hpp
+        simulation/preset.hpp
 )
 
 find_package(OpenGL REQUIRED)

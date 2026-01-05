@@ -28,7 +28,7 @@
 #include "glm/gtx/norm.hpp"
 #include "glm/gtx/rotate_vector.hpp"
 
-constexpr glm::vec3 DEFAULT_POSITION(-200, 0, 0);
+constexpr glm::vec3 DEFAULT_POSITION(0, 0, 50);
 
 Camera::Camera() : _fov(DEFAULT_FOV), _position(DEFAULT_POSITION), _left(), _up(), _forward() {
     resetOrientation();

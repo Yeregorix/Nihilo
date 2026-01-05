@@ -30,7 +30,7 @@
 /**
  * Computes the acceleration to apply to a given particle.
  */
-typedef std::function<glm::vec3(const ParticleState&)> Accelerator;
+typedef std::function<glm::dvec3(const ParticleState&)> Accelerator;
 
 /**
  * Computes the next state of the given particle using the Euler method.
@@ -42,7 +42,7 @@ typedef std::function<glm::vec3(const ParticleState&)> Accelerator;
  * @param timeStep The time step.
  * @param accelerator The accelerator.
  */
-void applyEuler(const ParticleState& current, ParticleState& next, float timeStep, const Accelerator& accelerator);
+void applyEuler(const ParticleState& current, ParticleState& next, double timeStep, const Accelerator& accelerator);
 
 /**
  * Computes the next state of the given particle using the Runge-Kutta 4 method.
@@ -54,10 +54,10 @@ void applyEuler(const ParticleState& current, ParticleState& next, float timeSte
  * @param timeStep The time step.
  * @param accelerator The accelerator.
  */
-void applyRungeKutta4(const ParticleState& current, ParticleState& next, float timeStep, const Accelerator& accelerator);
+void applyRungeKutta4(const ParticleState& current, ParticleState& next, double timeStep, const Accelerator& accelerator);
 
 /**
- * Computes the next state of the given particle using the Verlet method.
+ * Computes the next state of the given particle using the velocity Verlet method.
  *
  * This method is fast and accurate but is only compatible with acceleration formula independent of speed.
  * Consequently, it is incompatible with the relativist acceleration.
@@ -67,6 +67,6 @@ void applyRungeKutta4(const ParticleState& current, ParticleState& next, float t
  * @param timeStep The time step.
  * @param accelerator The accelerator.
  */
-void applyVerlet(const ParticleState& current, ParticleState& next, float timeStep, const Accelerator& accelerator);
+void applyVerlet(const ParticleState& current, ParticleState& next, double timeStep, const Accelerator& accelerator);
 
 #endif //NIHILO_INTEGRATION_HPP

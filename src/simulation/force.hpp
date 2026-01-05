@@ -38,6 +38,6 @@
  * @param softSq Squared value of the softening parameter
  * @return The force received by particle 1
  */
-glm::vec3 gravity(float mass1, float mass2, const glm::vec3& position1, const glm::vec3& position2, float softSq);
+glm::dvec3 gravity(double mass1, double mass2, const glm::dvec3& position1, const glm::dvec3& position2, double softSq);
 
 #endif //NIHILO_FORCE_HPP

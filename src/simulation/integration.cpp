@@ -22,14 +22,14 @@
 
 #include "integration.hpp"
 
-void applyEuler(const ParticleState& current, ParticleState& next, const float timeStep, const Accelerator& accelerator) {
+void applyEuler(const ParticleState& current, ParticleState& next, const double timeStep, const Accelerator& accelerator) {
     next.acceleration = accelerator(current);
     next.speed = current.speed + timeStep * next.acceleration;
     next.position = current.position + timeStep * next.speed;
 }
 
-void applyVerlet(const ParticleState& current, ParticleState& next, const float timeStep, const Accelerator& accelerator) {
-    next.position = current.position + timeStep * (current.speed + current.acceleration * timeStep * 0.5f);
+void applyVerlet(const ParticleState& current, ParticleState& next, const double timeStep, const Accelerator& accelerator) {
+    next.position = current.position + timeStep * (current.speed + current.acceleration * timeStep * 0.5);
     next.acceleration = accelerator(current);
-    next.speed = current.speed + (current.acceleration + next.acceleration) * timeStep * 0.5f;
+    next.speed = current.speed + (current.acceleration + next.acceleration) * timeStep * 0.5;
 }

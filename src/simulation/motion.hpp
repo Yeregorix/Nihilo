@@ -33,7 +33,7 @@
  * @param mass Mass of the body
  * @return
  */
-glm::vec3 classicAcceleration(const glm::vec3& force, float mass);
+glm::dvec3 classicAcceleration(const glm::dvec3& force, double mass);
 
 /**
  * Computes acceleration from force using Newton's second law of motion.
@@ -46,6 +46,6 @@ glm::vec3 classicAcceleration(const glm::vec3& force, float mass);
  * @param speed Speed of the body
  * @return
  */
-glm::vec3 relativistAcceleration(const glm::vec3& force, float mass, const glm::vec3& speed);
+glm::dvec3 relativistAcceleration(const glm::dvec3& force, double mass, const glm::dvec3& speed);
 
 #endif //NIHILO_MOTION_HPP

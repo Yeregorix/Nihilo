@@ -26,6 +26,8 @@
 #include <vector>
 #include "glm/glm.hpp"
 
+constexpr double POSITION_SCALE = 149597870700.0; // Astronomical Unit
+
 struct ParticleSnapshot {
     glm::vec3 position;
     float radius;
@@ -39,14 +41,15 @@ struct SimulationSnapshot {
 };
 
 struct ParticleInfo {
-    float mass;
+    double mass;
     float radius;
+    glm::vec3 color;
 };
 
 struct ParticleState {
-    glm::vec3 position;
-    glm::vec3 acceleration;
-    glm::vec3 speed;
+    glm::dvec3 position;
+    glm::dvec3 speed;
+    glm::dvec3 acceleration;
 };
 
 struct Particle : ParticleInfo {

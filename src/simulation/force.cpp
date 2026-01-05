@@ -26,13 +26,13 @@
 #include "glm/gtx/norm.hpp"
 
 // gravitational constant in SI unit
-constexpr float G = 6.67430e-11f;
+constexpr double G = 6.67430e-11;
 
-glm::vec3 gravity(const float mass1, const float mass2, const glm::vec3& position1, const glm::vec3& position2, const float softSq) {
-    const glm::vec3 delta = position2 - position1;
-    const float length2 = glm::length2(delta);
-    if (length2 < glm::epsilon<float>()) {
-        return glm::vec3(0, 0, 0);
+glm::dvec3 gravity(const double mass1, const double mass2, const glm::dvec3& position1, const glm::dvec3& position2, const double softSq) {
+    const glm::dvec3 delta = position2 - position1;
+    const double length2 = glm::length2(delta);
+    if (length2 < glm::epsilon<double>()) {
+        return {0, 0, 0};
     }
     return delta * (G * mass1 * mass2 / ((length2 + softSq) * std::sqrt(length2)));
 }

@@ -26,14 +26,14 @@
 #include "glm/gtx/norm.hpp"
 
 // speed of light in vacuum in m/s
-constexpr float C = 299792458.0;
-constexpr float C2 = C * C;
+constexpr double C = 299792458.0;
+constexpr double C2 = C * C;
 
-glm::vec3 classicAcceleration(const glm::vec3& force, const float mass) {
+glm::dvec3 classicAcceleration(const glm::dvec3& force, const double mass) {
     return force / mass;
 }
 
-glm::vec3 relativistAcceleration(const glm::vec3& force, const float mass, const glm::vec3& speed) {
-    const float lorentz = 1.0f / std::sqrt(1.0f - glm::length2(speed) / C2);
+glm::dvec3 relativistAcceleration(const glm::dvec3& force, const double mass, const glm::dvec3& speed) {
+    const double lorentz = 1.0 / std::sqrt(1.0 - glm::length2(speed) / C2);
     return (force - (glm::cross(force, speed) * speed / C2)) / (mass * lorentz);
 }
