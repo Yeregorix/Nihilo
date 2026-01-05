@@ -52,7 +52,7 @@ void Simulator::update() {
 
         std::srand(0);
         for (Particle& particle : _simulation.particles) {
-            particle.state[0] = { glm::ballRand(100.0f), glm::sphericalRand(0.1f) };
+            particle.state[0] = { glm::ballRand(100.0f), glm::vec3(0), glm::sphericalRand(0.1f) };
         }
     } else {
         const auto previousIndex = _simulation.age % 2;

@@ -27,10 +27,46 @@
 
 #include "simulation.hpp"
 
+/**
+ * Computes the acceleration to apply to a given particle.
+ */
 typedef std::function<glm::vec3(const ParticleState&)> Accelerator;
 
+/**
+ * Computes the next state of the given particle using the Euler method.
+ *
+ * This method is compatible with any acceleration formula but lack accuracy.
+ *
+ * @param current The current state of the particle.
+ * @param next The next state of the particle.
+ * @param timeStep The time step.
+ * @param accelerator The accelerator.
+ */
 void applyEuler(const ParticleState& current, ParticleState& next, float timeStep, const Accelerator& accelerator);
 
+/**
+ * Computes the next state of the given particle using the Runge-Kutta 4 method.
+ *
+ * This method is compatible with any acceleration formula but is more expensive.
+ *
+ * @param current The current state of the particle.
+ * @param next The next state of the particle.
+ * @param timeStep The time step.
+ * @param accelerator The accelerator.
+ */
 void applyRungeKutta4(const ParticleState& current, ParticleState& next, float timeStep, const Accelerator& accelerator);
+
+/**
+ * Computes the next state of the given particle using the Verlet method.
+ *
+ * This method is fast and accurate but is only compatible with acceleration formula independent of speed.
+ * Consequently, it is incompatible with the relativist acceleration.
+ *
+ * @param current The current state of the particle.
+ * @param next The next state of the particle.
+ * @param timeStep The time step.
+ * @param accelerator The accelerator.
+ */
+void applyVerlet(const ParticleState& current, ParticleState& next, float timeStep, const Accelerator& accelerator);
 
 #endif //NIHILO_INTEGRATION_HPP

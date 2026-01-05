@@ -45,6 +45,7 @@ struct ParticleInfo {
 
 struct ParticleState {
     glm::vec3 position;
+    glm::vec3 acceleration;
     glm::vec3 speed;
 };
 
