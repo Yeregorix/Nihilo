@@ -27,21 +27,21 @@
 
 constexpr size_t SOLAR_SYSTEM_SIZE = 9;
 
-inline float solarSystemRadius(const double original) {
-    return static_cast<float>(std::log10(original) - 6.1) * 0.1f;
+inline float scaleSolarSystemBody(const double original) {
+    return static_cast<float>(std::log10(original) - 6) * 0.1f;
 }
 
 // Mass and radius from https://ssd.jpl.nasa.gov/planets/phys_par.html
 const ParticleInfo SOLAR_SYSTEM_INFO[SOLAR_SYSTEM_SIZE] = {
-    {1.9884e30, solarSystemRadius(696340e3), glm::vec3(1.0, 1.0, 1.0)}, // Sun
-    {0.330103e24, solarSystemRadius(2439.4e3), glm::vec3(0.59, 0.59, 0.59)}, // Mercury
-    {4.86731e24, solarSystemRadius(6051.8e3), glm::vec3(0.91, 0.83, 0.63)}, // Venus
-    {5.97217e24, solarSystemRadius(6371.0084e3), glm::vec3(0.24, 0.47, 0.87)}, // Earth
-    {0.641691e24, solarSystemRadius(3389.5e3), glm::vec3(0.78, 0.39, 0.20)}, // Mars
-    {1898.125e24, solarSystemRadius(69911e3), glm::vec3(0.86, 0.71, 0.55)}, // Jupiter
-    {568.317e24, solarSystemRadius(58232e3), glm::vec3(0.91, 0.83, 0.67)}, // Saturn
-    {86.8099e24, solarSystemRadius(25362e3), glm::vec3(0.63, 0.78, 0.87)}, // Uranus
-    {102.4092e24, solarSystemRadius(24622e3), glm::vec3(0.31, 0.47, 0.78)} // Neptune
+    {1.9884e30, scaleSolarSystemBody(696340e3), glm::vec3(1.0, 1.0, 1.0)}, // Sun
+    {0.330103e24, scaleSolarSystemBody(2439.4e3), glm::vec3(0.59, 0.59, 0.59)}, // Mercury
+    {4.86731e24, scaleSolarSystemBody(6051.8e3), glm::vec3(0.91, 0.83, 0.63)}, // Venus
+    {5.97217e24, scaleSolarSystemBody(6371.0084e3), glm::vec3(0.24, 0.47, 0.87)}, // Earth
+    {0.641691e24, scaleSolarSystemBody(3389.5e3), glm::vec3(0.78, 0.39, 0.20)}, // Mars
+    {1898.125e24, scaleSolarSystemBody(69911e3), glm::vec3(0.86, 0.71, 0.55)}, // Jupiter
+    {568.317e24, scaleSolarSystemBody(58232e3), glm::vec3(0.91, 0.83, 0.67)}, // Saturn
+    {86.8099e24, scaleSolarSystemBody(25362e3), glm::vec3(0.63, 0.78, 0.87)}, // Uranus
+    {102.4092e24, scaleSolarSystemBody(24622e3), glm::vec3(0.31, 0.47, 0.78)} // Neptune
 };
 
 // Generated from https://ssd.jpl.nasa.gov/horizons/
